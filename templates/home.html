@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for post in posts %}
+    <article class="media content-section">
+        <img class="rounded-circle article-img" src="#">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">xxxx</a>
+              <small class="text-muted">xxxx</small>
+            </div>
+            <h2><a class="article-title" href="#">xxxx</a></h2>
+            <p class="article-content">xxxx</p>
+          </div>
+    </article>
+    {% endfor %}
+{% endblock content %}

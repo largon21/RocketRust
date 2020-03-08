@@ -1,0 +1,39 @@
+{% extends "Layout" %}
+{% block content %}
+    <h1>{{name}}</h1>
+    <div class="content-section">
+        <form method="POST" action="">
+
+            <fieldset classs="form-group">
+                <legend class="border-bottom mb-4">Join Today</legend>
+                <dir class="form-group">
+                    form-group username
+                    <input type="text" name="username" placeholder="Username">
+                        <div class="invalid-feedback">
+                            invalid-feedback
+                        </div>
+
+                </dir>
+                <dir class="form-group">
+                    form-group password
+                    <input type="text" name="password" placeholder="Password">
+                        <div class="invalid-feedback">
+                            invalid-feedback
+                        </div>
+
+                </dir>
+
+            </fieldset>
+            <dir class="form-group">
+                <button type="submit"> Register </button>
+
+            </dir>
+        </form>
+    </div>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Already Have An Account? <a class="ml-2" href="#">Sign In</a>
+            </small>
+        </div>
+
+{% endblock content %}
