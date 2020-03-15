@@ -14,7 +14,7 @@ mod templates;
 fn main() {
     rocket::ignite()
         .mount("/static", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/static"))) //css file
-        .mount("/", routes![templates::index, templates::about, 
+        .mount("/", routes![templates::index, templates::about,
             templates::register_get, templates::register_post])
         .attach(Template::fairing())
         .launch();
