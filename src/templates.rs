@@ -1,5 +1,8 @@
+// extern crate diesel;
+
 use rocket_contrib::templates::Template;
 use rocket::request::Form;
+// use hello_rocket::*;
 
 
 
@@ -35,6 +38,13 @@ pub struct User {
 
 #[post("/register", data = "<userdata>")]
 pub fn register_post(userdata: Form<User>) -> Template {
+    // let connection = establish_connection();
+    // create_new_user(&connection,
+    //     userdata.username.clone(), 
+    //     userdata.password.clone(), 
+    //     format!("email@email.com"), 
+    //     999);
+
     let name = format!("username: {}\npassword: {}", userdata.username, userdata.password);
     let context = TemplateContext {name};
     Template::render("register", &context)
