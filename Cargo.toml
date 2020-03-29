@@ -13,6 +13,8 @@ serde_derive = "1.0"
 serde_json = "1.0"
 diesel = { version = "1.4.3", features = ["sqlite"] }
 dotenv = "0.15.0"
+rand = "0.4.2"
+time = "0.1"
 
 [dependencies.rocket_contrib]
 version = "0.4.3"

@@ -22,6 +22,16 @@ pub fn establish_connection() -> SqliteConnection {
         .expect(&format!("Error connecting to {}", database_url))
 }
 
+pub fn create_new_user_session(
+    _conn: &SqliteConnection,
+    user_id: i32,
+    token: String,
+
+)
+{
+    println!("{}, {}",user_id, token);
+}
+
 pub fn create_new_user(
     conn: &SqliteConnection,
     nickname: String,
@@ -42,10 +52,5 @@ pub fn create_new_user(
         .values(&new_user)
         .execute(conn)
         .expect("Error saving new user");
-
-    // users::table
-    //     .order(users::id.desc())
-        // .first(conn)
-        // .unwrap()
 
 }
