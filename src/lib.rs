@@ -10,7 +10,7 @@ use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
 use std::env;
 
-use self::models::NewUser; //{NewUser, User};
+use self::models::{NewUser, NewUserSession}; //{NewUser, User};
 
 pub fn establish_connection() -> SqliteConnection {
     dotenv().ok();
@@ -23,13 +23,22 @@ pub fn establish_connection() -> SqliteConnection {
 }
 
 pub fn create_new_user_session(
-    _conn: &SqliteConnection,
+    conn: &SqliteConnection,
     user_id: i32,
     token: String,
 
-)
-{
-    println!("{}, {}",user_id, token);
+) {
+    use schema::user_sessions;
+
+    let new_user_session = NewUserSession {
+        user_id,
+        token,
+    };
+
+    diesel::insert_into(user_sessions::table)
+        .values(&new_user_session)
+        .execute(conn)
+        .expect("Error saving new user session");
 }
 
 pub fn create_new_user(
@@ -37,7 +46,6 @@ pub fn create_new_user(
     nickname: String,
     password: String,
     email: String,
-    token: i32,
 ) {
     use schema::users;
 
@@ -45,7 +53,6 @@ pub fn create_new_user(
         nickname,
         password,
         email,
-        token,
     };
 
     diesel::insert_into(users::table)

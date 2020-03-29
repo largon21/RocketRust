@@ -1,12 +1,12 @@
 use crate::schema::*;
 
+//---------TABLE users-------------
 #[derive(Queryable)]
 pub struct User {
     pub id: i32,
     pub nickname: String,
     pub password: String,
     pub email: String,
-    pub token: i32,
 }
 
 #[derive(Insertable)]
@@ -15,5 +15,19 @@ pub struct NewUser{
     pub nickname: String,
     pub password: String,
     pub email: String,
-    pub token: i32,
+}
+
+//---------TABLE user_sessions-------------
+#[derive(Queryable)]
+pub struct UserSession {
+    pub id: i32,
+    pub user_id: i32,
+    pub token: String,
+}
+
+#[derive(Insertable)]
+#[table_name="user_sessions"]
+pub struct NewUserSession {
+    pub user_id: i32,
+    pub token: String,
 }

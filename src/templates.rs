@@ -80,8 +80,7 @@ pub fn register_post(userdata: Form<User>) -> Template {
     create_new_user(&connection,
         userdata.username.clone(), 
         userdata.password.clone(), 
-        userdata.email.clone(),
-        999
+        userdata.email.clone()
     );
 
     let name = format!("username: {}\npassword: {}", userdata.username, userdata.password);
