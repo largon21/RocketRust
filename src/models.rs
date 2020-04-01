@@ -1,4 +1,4 @@
-use crate::schema::*;
+use super::schema::*;
 
 //---------TABLE users-------------
 #[derive(Queryable)]

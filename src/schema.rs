@@ -1,14 +1,14 @@
 table! {
     user_sessions (id) {
-        id -> Nullable<Integer>,
-        user_id -> Nullable<Integer>,
+        id -> Integer,
+        user_id -> Integer,
         token -> Text,
     }
 }
 
 table! {
     users (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         nickname -> Text,
         password -> Text,
         email -> Text,
