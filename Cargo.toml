@@ -15,6 +15,7 @@ diesel = { version = "1.4.3", features = ["sqlite"] }
 dotenv = "0.15.0"
 rand = "0.4.2"
 time = "0.1"
+bcrypt = "0.6"
 
 [dependencies.rocket_contrib]
 version = "0.4.3"

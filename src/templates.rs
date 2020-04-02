@@ -6,6 +6,7 @@ use hello_rocket::*;
 use time::Duration;
 use hello_rocket::models::UserSession;
 use diesel::prelude::*;
+use bcrypt::{DEFAULT_COST, hash, verify};
 
 
 
@@ -136,14 +137,26 @@ pub fn about() -> Template {
 
 #[post("/register", data = "<userdata>")]
 pub fn register_post(userdata: Form<User>) -> Template {
-    let connection = establish_connection();
-    create_new_user(&connection,
-        userdata.username.clone(), 
-        userdata.password.clone(), 
-        userdata.email.clone()
-    );
+    
+    let password = userdata.password.clone();
+    let name: String;
 
-    let name = format!("username: {}\npassword: {}", userdata.username, userdata.password);
+    match hash(&password, DEFAULT_COST) {
+        Ok(hashed_password) => {
+            let connection = establish_connection();
+            create_new_user(&connection,
+                userdata.username.clone(), 
+                hashed_password.clone(), 
+                userdata.email.clone()
+            );
+            name = format!("username: {}\npassword: {}", userdata.username, hashed_password);
+            
+        }
+        Err(_) => {
+            name = format!("registration faild");
+        }
+    }
+
     let context = TemplateContext {name};
     Template::render("register", &context)
 }
