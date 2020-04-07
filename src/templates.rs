@@ -4,7 +4,7 @@ use rocket::response::Redirect;
 use rocket::request::Form;
 use hello_rocket::*;
 use time::Duration;
-use hello_rocket::models::UserSession;
+use hello_rocket::models::{UserSession, User};
 use diesel::prelude::*;
 use bcrypt::{DEFAULT_COST, hash, verify};
 
@@ -15,14 +15,53 @@ struct TemplateContext {
     name: String,
 }
 
+//<-----------------Login----------------->
 #[derive(FromForm)]
-pub struct User {
+pub struct UserLoginForm {
     username: String,
     password: String,
-    email: String,
 }
 
-//<-----------------Login----------------->
+#[derive(Serialize)]
+struct TemplateContextLogin<'a> {
+    name: String,
+    error: &'a str,
+}
+
+fn get_password_hash_from_username_or_email(name: String) -> Result<String, std::io::Error> {
+    use hello_rocket::schema::users::dsl::*;
+
+    let connection = establish_connection();
+
+    let results;
+
+    if name.contains("@") {
+        results = users
+            .filter(email.eq(name))
+            .limit(1)
+            .load::<User>(&connection)
+            .expect("Error loading email");
+    }
+    else {
+        results = users
+            .filter(nickname.eq(name))
+            .limit(1)
+            .load::<User>(&connection)
+            .expect("Error loading user");
+    }
+    
+    
+    if results.len() == 1 {
+        return Ok(results[0].password.to_string());
+    }
+    else {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            "no user found",
+        ));
+    }
+}
+
 fn generate_session_token(length: u8) -> Result<String, std::io::Error> {
     let bytes: Vec<u8> = (0..length).map(|_| rand::random::<u8>()).collect();
     let strings: Vec<String> = bytes.iter().map(|byte| format!("{:02X}", byte)).collect();
@@ -30,37 +69,200 @@ fn generate_session_token(length: u8) -> Result<String, std::io::Error> {
 }
 
 #[post("/login", data = "<user>")]
-pub fn login(mut cookies: Cookies, user: Form<User>) -> Result<Redirect, Template> {
-    let name = "TO DO - login".to_string();
-    let context = TemplateContext {name};
-
-    if user.username == "true".to_string() && user.password == "true".to_string() {
-        match generate_session_token(64) {
-            Ok(session_token) => {
-                let connection = establish_connection();
-                let user_id = 1;
-                create_new_user_session(&connection, user_id, session_token.clone());
-                let mut c = Cookie::new("session_token", session_token);
-                c.set_max_age(Duration::hours(24));
-                cookies.add_private(c);
-                return Ok(Redirect::to("/"));
-            }
-            Err(_) => {
-                return Err(Template::render("login", &context));
-            }    
+pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Redirect, Template> {
+    if user.username.is_empty() {
+        let name = "Error login - empty space".to_string();
+        let context: TemplateContextLogin;
+        if user.password.is_empty() {
+            context = TemplateContextLogin {name, error: "username and password"};
         }
-    } 
+        else {
+            context = TemplateContextLogin {name, error: "username"};
+        }
+        
+        return Err(Template::render("login", &context));
+    }
+
+    if user.password.is_empty() {
+        let name = "Error login - empty space".to_string();
+        let context = TemplateContextLogin {name, error: "password"};
+        return Err(Template::render("login", &context));
+    }
+
+    match get_password_hash_from_username_or_email(user.username.clone()) {
+        Ok(password_hash) => {
+            println!("debug");
+            match verify(&user.password, &password_hash) {
+                Ok(password_match) => {
+                    if password_match {
+                        match generate_session_token(64) {
+                            Ok(session_token) => {
+                                let connection = establish_connection();
+                                let user_id = 1;
+                                create_new_user_session(&connection, user_id, session_token.clone());
+                                let mut c = Cookie::new("session_token", session_token);
+                                c.set_max_age(Duration::hours(24));
+                                cookies.add_private(c);
+                                return Ok(Redirect::to("/"));
+                            }
+                            Err(_) => {
+                                let name = "Error login - token generation issue".to_string();
+                                let context = TemplateContextLogin {name, error: "password"};
+                                return Err(Template::render("login", &context));
+                            }    
+                        }
+                    }
+                    else {
+                        let name = "Error login - password incorrect".to_string();
+                        let context = TemplateContextLogin {name, error: ""};
+                        return Err(Template::render("login", &context));
+                    }
+                }
+                Err(_) => {
+                    let name = "Error login - verifying password incorrect".to_string();
+                    let context = TemplateContextLogin {name, error: ""};
+                    return Err(Template::render("login", &context));
+                }
+            }
+        }
+        Err(err) => {
+            let name = format!("{}{}", "Error login - ", err);
+            let context = TemplateContextLogin {name, error: "username and password"};
+            return Err(Template::render("login", &context));
+        }
+    }
+}
+
+#[get("/login")]
+pub fn login_get() -> Template {
+    let context = TemplateContextLogin {name: "".to_string(), error: ""};
+    Template::render("login", &context)
+}
+
+//<-----------------Register----------------->
+#[derive(FromForm)]
+pub struct UserForm {
+    username: String,
+    email: String,
+    password: String,
+}
+
+#[derive(Serialize)]
+struct TemplateContextRegister {
+    name: String,
+    error_username: bool,
+    error_email: bool,
+    error_password: bool,
+}
+
+fn register_validate_username(username: String) -> bool {
+    use hello_rocket::schema::users::dsl::*;
+
+    if !username.is_empty() {
+        let connection = establish_connection();
+        let results = users
+            .filter(nickname.eq(username))
+            .limit(1)
+            .load::<User>(&connection)
+            .expect("Error loading email");
+
+        if results.len() == 0 {
+            return false;
+        }
+        else {
+            return true;
+        }
+        
+    }
     else {
-        let context = TemplateContext {
-            name: "Username or password incorrect".to_string()
-        };
+        return true;
+    }
+}
+
+fn register_validate_email(user_email: String) -> bool {
+    use hello_rocket::schema::users::dsl::*;
+
+    if !user_email.is_empty() {
+        let connection = establish_connection();
+        let results = users
+            .filter(email.eq(user_email))
+            .limit(1)
+            .load::<User>(&connection)
+            .expect("Error loading email");
+
+        if results.len() == 0 {
+            return false;
+        }
+        else {
+            return true;
+        }
+        
+    }
+    else {
+        return true;
+    }
+}
+
+fn register_validate_password(user_password: String) -> bool {
+    if !user_password.is_empty() {
+        return false;
+    }    
+    else {
+        return true;
+    }
+}
+
+#[post("/register", data = "<userdata>")]
+pub fn register_post(userdata: Form<UserForm>) -> Template {
+    let error_username: bool = register_validate_username(userdata.username.clone());
+    let error_email: bool = register_validate_email(userdata.email.clone());
+    let error_password: bool = register_validate_password(userdata.password.clone()); 
+
+    let name: String;
+
+    if error_username || error_email || error_password {
+        name = format!("registration faild - error");
+        let context = TemplateContextRegister {name, error_username, error_email, error_password};
+        return Template::render("register", &context)
     }
     
-    Err(Template::render("login", &context))
+    let password = userdata.password.clone();
+    
+
+    match hash(&password, DEFAULT_COST) {
+        Ok(hashed_password) => {
+            let connection = establish_connection();
+            create_new_user(&connection,
+                userdata.username.clone(), 
+                hashed_password.clone(), 
+                userdata.email.clone()
+            );
+            name = format!("username: {}\npassword: {}", userdata.username, hashed_password);
+            
+        }
+        Err(_) => {
+            name = format!("registration faild");
+        }
+    }
+
+    let context = TemplateContextRegister {name, error_username, error_email, error_password};
+    Template::render("register", &context)
+}
+
+#[get("/register")]
+pub fn register_get() -> Template {
+    let name = "TO DO - register".to_string();
+    let context = TemplateContextRegister {
+        name, 
+        error_username: false, 
+        error_email: false, 
+        error_password: false
+    };
+    Template::render("register", &context)
 }
 
 //<-----------------Home----------------->
-fn get_user_id_from_Session_token(session_token: String) -> Result<i64, std::io::Error> {
+fn get_user_id_from_session_token(session_token: String) -> Result<i64, std::io::Error> {
     use hello_rocket::schema::user_sessions::dsl::*;
 
     let connection = establish_connection();
@@ -84,7 +286,7 @@ fn get_user_id_from_Session_token(session_token: String) -> Result<i64, std::io:
 
 fn get_user_id_from_cookies(mut cookies: Cookies) -> Result<i64, std::io::Error> {
     match cookies.get_private("session_token") {
-        Some(cookie) => match get_user_id_from_Session_token(cookie.value().to_string()) {
+        Some(cookie) => match get_user_id_from_session_token(cookie.value().to_string()) {
             Ok(user_id) => Ok(user_id),
             Err(error) => Err(error),
         },
@@ -130,42 +332,6 @@ pub fn about() -> Template {
     let name = "TO DO - about".to_string();
     let context = TemplateContext {name};
     Template::render("about", &context)
-}
-
-
-//<-----------------Register----------------->
-
-#[post("/register", data = "<userdata>")]
-pub fn register_post(userdata: Form<User>) -> Template {
-    
-    let password = userdata.password.clone();
-    let name: String;
-
-    match hash(&password, DEFAULT_COST) {
-        Ok(hashed_password) => {
-            let connection = establish_connection();
-            create_new_user(&connection,
-                userdata.username.clone(), 
-                hashed_password.clone(), 
-                userdata.email.clone()
-            );
-            name = format!("username: {}\npassword: {}", userdata.username, hashed_password);
-            
-        }
-        Err(_) => {
-            name = format!("registration faild");
-        }
-    }
-
-    let context = TemplateContext {name};
-    Template::render("register", &context)
-}
-
-#[get("/register")]
-pub fn register_get() -> Template {
-    let name = "TO DO - register".to_string();
-    let context = TemplateContext {name};
-    Template::render("register", &context)
 }
 
 

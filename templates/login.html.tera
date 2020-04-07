@@ -11,7 +11,7 @@
                 {% if error == "username" or error == "username and password" %}
                     <input type="text" class="form-control form-control-lg is-invalid" id="text" name="username" placeholder="Username or email">
                     <div class="invalid-feedback">
-                        <span>Wrong username</span>
+                        <span>Niewłaściwy username</span>
                     </div>
                 {% else %}
                     <input type="text" class="form-control form-control-lg" id="text" name="username" placeholder="Username or email">
@@ -23,7 +23,7 @@
                 {% if error == "password" or error == "username and password" %}
                     <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="password" placeholder="Password">
                     <div class="invalid-feedback">
-                        <span>Wrong password</span>
+                        <span>Niewłaściwy password</span>
                     </div>
                 {% else %}
                     <input type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
@@ -32,7 +32,7 @@
         </fieldset>
 
         <dir class="form-group">
-            <button class="btn btn-outline-info" type="submit"> Loigin </button>
+            <button class="btn btn-outline-dark" type="submit"> Loigin </button>
         </dir>
         
         <small class="text-muted ml-2">

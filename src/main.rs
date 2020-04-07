@@ -18,7 +18,9 @@ fn main() {
             templates::index, 
             templates::about, 
             templates::register_get, 
-            templates::register_post
+            templates::register_post,
+            templates::login_get,
+            templates::login_post,
             ])
         .attach(Template::fairing())
         .launch();
