@@ -26,7 +26,7 @@
                         <span>Wrong email</span>
                     </div>
                 {% else %}
-                    <input type="text" class="form-control form-control-lg" id="text" name="email" placeholder="Email">
+                    <input type="email" class="form-control form-control-lg" id="text" name="email" placeholder="Email">
                 {% endif %}
             </dir>
 
@@ -45,7 +45,7 @@
         </fieldset>
 
         <dir class="form-group">
-            <button class="btn btn-outline-info" type="submit"> Register </button>
+            <button class="btn btn-outline-dark" type="submit"> Register </button>
         </dir>
     </form>
 </div>

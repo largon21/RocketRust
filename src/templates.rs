@@ -2,6 +2,9 @@ use rocket_contrib::templates::Template;
 use rocket::http::{Cookie, Cookies}; 
 use rocket::response::Redirect; 
 use rocket::request::Form;
+// use rocket::request::FromFormValue;
+// use rocket::http::RawStr;
+
 use hello_rocket::*;
 use time::Duration;
 use hello_rocket::models::{UserSession, User};
@@ -16,6 +19,19 @@ struct TemplateContext {
 }
 
 //<-----------------Login----------------->
+struct Username(String);
+
+// impl<'v> FromFormValue<'v> for Username {
+//     type Error = &'v RawStr;
+
+//     fn from_form_value(form_value: &'v RawStr) -> Result<Username, &'v RawStr> {
+//         match form_value.parse::<String>() {
+//             Ok(username) if !username.is_empty() => Ok(Username(username)),
+//             _ => Err(form_value),
+//         }
+//     }
+// }
+
 #[derive(FromForm)]
 pub struct UserLoginForm {
     username: String,
@@ -23,9 +39,10 @@ pub struct UserLoginForm {
 }
 
 #[derive(Serialize)]
-struct TemplateContextLogin<'a> {
+struct TemplateContextLogin {
     name: String,
-    error: &'a str,
+    error_username: bool,
+    error_password: bool,
 }
 
 fn get_password_hash_from_username_or_email(name: String) -> Result<String, std::io::Error> {
@@ -68,24 +85,29 @@ fn generate_session_token(length: u8) -> Result<String, std::io::Error> {
     return Ok(strings.join(""));
 }
 
+fn login_validate_form(word: String) -> bool {
+    if word.is_empty() {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 #[post("/login", data = "<user>")]
 pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Redirect, Template> {
-    if user.username.is_empty() {
-        let name = "Error login - empty space".to_string();
-        let context: TemplateContextLogin;
-        if user.password.is_empty() {
-            context = TemplateContextLogin {name, error: "username and password"};
-        }
-        else {
-            context = TemplateContextLogin {name, error: "username"};
-        }
-        
-        return Err(Template::render("login", &context));
-    }
+    let error_username = login_validate_form(user.username.clone());
+    let error_password = login_validate_form(user.password.clone());
+    let mut username: String = format!("");
 
-    if user.password.is_empty() {
-        let name = "Error login - empty space".to_string();
-        let context = TemplateContextLogin {name, error: "password"};
+
+    if error_username || error_password {
+        let name = "Error - empty space".to_string();
+        let context = TemplateContextLogin {
+            name, 
+            error_username, 
+            error_password
+        };
         return Err(Template::render("login", &context));
     }
 
@@ -107,27 +129,43 @@ pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Red
                             }
                             Err(_) => {
                                 let name = "Error login - token generation issue".to_string();
-                                let context = TemplateContextLogin {name, error: "password"};
+                                let context = TemplateContextLogin {
+                                    name, 
+                                    error_username: false, 
+                                    error_password: true
+                                };
                                 return Err(Template::render("login", &context));
                             }    
                         }
                     }
                     else {
                         let name = "Error login - password incorrect".to_string();
-                        let context = TemplateContextLogin {name, error: ""};
+                        let context = TemplateContextLogin {
+                            name, 
+                            error_username: false, 
+                            error_password: false
+                        };
                         return Err(Template::render("login", &context));
                     }
                 }
                 Err(_) => {
                     let name = "Error login - verifying password incorrect".to_string();
-                    let context = TemplateContextLogin {name, error: ""};
+                    let context = TemplateContextLogin {
+                        name, 
+                        error_username: false, 
+                        error_password: false
+                    };
                     return Err(Template::render("login", &context));
                 }
             }
         }
         Err(err) => {
             let name = format!("{}{}", "Error login - ", err);
-            let context = TemplateContextLogin {name, error: "username and password"};
+            let context = TemplateContextLogin {
+                name, 
+                error_username: true, 
+                error_password: true
+            };
             return Err(Template::render("login", &context));
         }
     }
@@ -135,7 +173,11 @@ pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Red
 
 #[get("/login")]
 pub fn login_get() -> Template {
-    let context = TemplateContextLogin {name: "".to_string(), error: ""};
+    let context = TemplateContextLogin {
+        name: "".to_string(), 
+        error_username: false, 
+        error_password: false
+    };
     Template::render("login", &context)
 }
 

@@ -8,10 +8,10 @@
 
             <dir class="form-group">
                 <label class="form-control-label" for="text">Username: </label>
-                {% if error == "username" or error == "username and password" %}
+                {% if error_username %}
                     <input type="text" class="form-control form-control-lg is-invalid" id="text" name="username" placeholder="Username or email">
                     <div class="invalid-feedback">
-                        <span>Wrong username</span>
+                        <span>wrong username</span>
                     </div>
                 {% else %}
                     <input type="text" class="form-control form-control-lg" id="text" name="username" placeholder="Username or email">
@@ -20,7 +20,7 @@
 
             <dir class="form-group">
                 <label class="form-control-label" for="pwd">Password:</label>
-                {% if error == "password" or error == "username and password" %}
+                {% if error_password %}
                     <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="password" placeholder="Password">
                     <div class="invalid-feedback">
                         <span>Wrong password</span>
@@ -32,7 +32,7 @@
         </fieldset>
 
         <dir class="form-group">
-            <button class="btn btn-outline-info" type="submit"> Loigin </button>
+            <button class="btn btn-outline-dark" type="submit"> Loigin </button>
         </dir>
         
         <small class="text-muted ml-2">
