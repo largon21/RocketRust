@@ -9,11 +9,8 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="static/main.css">
-    {% if title %}
-        <title>Rust Rocket - {{title}}</title>
-    {% else %}
-        <title>Rust Rocket</title>
-    {% endif %}
+    <title>Rust Rocket </title>
+
   {% endblock head %}
 </head>
 <body>
@@ -24,21 +21,21 @@
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
+      {% if is_authenticated %}
       <div class="collapse navbar-collapse" id="navbarToggle">
         <div class="navbar-nav mr-auto">
-          <a class="nav-item nav-link" href="#">Home</a>
-          <a class="nav-item nav-link" href="/about">About</a>
+          <a class="nav-item nav-link" href="#">Charts</a>
+          <a class="nav-item nav-link" href="#">Wallet</a>
         </div>
         <!-- Navbar Right Side -->
         <div class="navbar-nav">
-           {% if current_user.is_authenticated %}
-              <a class="nav-item nav-link" href="#">New Post</a>
               <a class="nav-item nav-link" href="#">Account</a>
               <a class="nav-item nav-link" href="#">Logout</a>
-           {% else %}
+      {% else %}
+        <div class="navbar-nav">  
               <a class="nav-item nav-link" href="/login">Login</a>
               <a class="nav-item nav-link" href="/register">Register</a>
-            {% endif %}
+      {% endif %}
         </div>
       </div>
     </div>
