@@ -25,12 +25,12 @@
       <div class="collapse navbar-collapse" id="navbarToggle">
         <div class="navbar-nav mr-auto">
           <a class="nav-item nav-link" href="#">Charts</a>
-          <a class="nav-item nav-link" href="#">Wallet</a>
+          <a class="nav-item nav-link" href="/about">Wallet</a>
         </div>
         <!-- Navbar Right Side -->
         <div class="navbar-nav">
               <a class="nav-item nav-link" href="#">Account</a>
-              <a class="nav-item nav-link" href="#">Logout</a>
+              <a class="nav-item nav-link" href="/logout">Logout</a>
       {% else %}
         <div class="navbar-nav">  
               <a class="nav-item nav-link" href="/login">Login</a>

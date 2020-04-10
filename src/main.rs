@@ -21,6 +21,7 @@ fn main() {
             templates::register_post,
             templates::login_get,
             templates::login_post,
+            templates::logout,
             ])
         .attach(Template::fairing())
         .launch();

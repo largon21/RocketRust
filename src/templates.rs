@@ -1,6 +1,6 @@
 use rocket_contrib::templates::Template;
 use rocket::http::{Cookie, Cookies}; 
-use rocket::response::Redirect; 
+use rocket::response::{Flash, Redirect};
 use rocket::request::Form;
 
 use hello_rocket::*;
@@ -68,6 +68,39 @@ fn get_password_hash_from_username_or_email(name: String) -> Result<String, std:
     }
 }
 
+fn get_user_id_from_username_or_email(name: String) -> Result<i32, std::io::Error> {
+    use hello_rocket::schema::users::dsl::*;
+
+    let connection = establish_connection();
+
+    let results;
+
+    if name.contains("@") {
+        results = users
+            .filter(email.eq(name))
+            .limit(1)
+            .load::<User>(&connection)
+            .expect("Error loading email");
+    }
+    else {
+        results = users
+            .filter(nickname.eq(name))
+            .limit(1)
+            .load::<User>(&connection)
+            .expect("Error loading user");
+    }
+    
+    if results.len() == 1 {
+        return Ok(results[0].id);
+    }
+    else {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            "no user found",
+        ));
+    }
+}
+
 fn generate_session_token(length: u8) -> Result<String, std::io::Error> {
     let bytes: Vec<u8> = (0..length).map(|_| rand::random::<u8>()).collect();
     let strings: Vec<String> = bytes.iter().map(|byte| format!("{:02X}", byte)).collect();
@@ -109,12 +142,18 @@ pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Red
                             match generate_session_token(64) {
                                 Ok(session_token) => {
                                     let connection = establish_connection();
-                                    let user_id = 1;
-                                    create_new_user_session(&connection, user_id, session_token.clone());
-                                    let mut c = Cookie::new("session_token", session_token);
-                                    c.set_max_age(Duration::hours(24));
-                                    cookies.add_private(c);
-                                    return Ok(Redirect::to("/"));
+                                    match get_user_id_from_username_or_email(user.username.clone()) {
+                                        Ok(user_id) => {
+                                            create_new_user_session(&connection, user_id, session_token.clone());
+                                            let mut c = Cookie::new("session_token", session_token);
+                                            c.set_max_age(Duration::hours(24));
+                                            cookies.add_private(c);
+                                            return Ok(Redirect::to("/"));
+                                        }
+                                        Err(_) => {
+                                            return Ok(Redirect::to("/"));
+                                        }
+                                    }
                                 }
                                 Err(_) => {
                                     let name = "Error login - token generation issue".to_string();
@@ -228,7 +267,6 @@ fn register_validate_email(user_email: String) -> bool {
         else {
             return true;
         }
-        
     }
     else {
         return true;
@@ -338,11 +376,32 @@ struct TemplateContextIndex {
     is_authenticated: bool,
 }
 
+fn check_user_id(user_id: i32) -> bool {
+    use hello_rocket::schema::users::dsl::*;
+
+    let connection = establish_connection();
+
+    let results = users
+        .filter(id.eq(user_id))
+        .limit(1)
+        .load::<User>(&connection)
+        .expect("Error loading email");
+
+    if results.len() == 1 {
+        return true;
+    }
+    else {
+        return false;
+    }
+
+}
+
+
 #[get("/")]
 pub fn index(cookies: Cookies) -> Template {
     match get_user_id_from_cookies(cookies) {
         Ok(user_id) => {
-            if user_id == 1 {
+            if check_user_id(user_id as i32) {
                 let context = TemplateContextIndex {
                     name: "TO DO - home - you are logged in".to_string(),
                     is_authenticated: true
@@ -376,4 +435,27 @@ pub fn about() -> Template {
     Template::render("about", &context)
 }
 
+//<-----------------Logout----------------->
+fn remove_user_id_from_session_token(session_token: String) {
+    use hello_rocket::schema::user_sessions::dsl::*;
+
+    let connection = establish_connection();
+
+    let num_deleted = diesel::delete(user_sessions.filter(token.eq(session_token)))
+        .execute(&connection)
+        .expect("Error deleting posts");
+
+}
+
+// Remove the `user_id` cookie.
+#[get("/logout")]
+pub fn logout(mut cookies: Cookies) -> Flash<Redirect> {
+    
+    if let Some(cookie) = cookies.get_private("session_token") {
+        remove_user_id_from_session_token(cookie.value().to_string());
+        cookies.remove_private(Cookie::named("session_token"));
+    }
+    
+    Flash::success(Redirect::to("/"), "Successfully logged out.")
+}
 
