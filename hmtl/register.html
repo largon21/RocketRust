@@ -42,6 +42,18 @@
                 {% endif %}
             </dir>
 
+            <dir class="form-group">
+                <label class="form-control-label" for="pwd">Confirm password:</label>
+                {% if error_confirm_password %}
+                    <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
+                    <div class="invalid-feedback">
+                        <span>Wrong password</span>
+                    </div>
+                {% else %}
+                    <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
+                {% endif %}
+            </dir>
+
         </fieldset>
 
         <dir class="form-group">

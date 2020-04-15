@@ -1,0 +1,33 @@
+{% extends "Layout" %}
+
+{% block content %}
+    <div class="content-section">
+        <h1>{{name}}</h1>
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+            <div id="tradingview_5b134"></div>
+            <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/BITSTAMP-BTCUSD/" rel="noopener" target="_blank"><span class="blue-text">BTCUSD Chart</span></a> by TradingView</div>
+            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+            <script type="text/javascript">
+            new TradingView.widget(
+            {
+            "width": 1100,
+            "height": 550,
+            "symbol": "BITSTAMP:BTCUSD",
+            "interval": "D",
+            "timezone": "Etc/UTC",
+            "theme": "light",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "withdateranges": true,
+            "allow_symbol_change": true,
+            "container_id": "tradingview_5b134"
+            }
+            );
+            </script>
+        </div>
+    <!-- TradingView Widget END -->
+</div>
+{% endblock content %}

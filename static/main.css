@@ -24,6 +24,10 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
 }
 
+.tradingview-widget-container {
+  background: #ffffff;
+}
+
 .content-section {
   background: #ffffff;
   padding: 10px 20px;

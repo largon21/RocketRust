@@ -16,7 +16,8 @@ fn main() {
         .mount("/static", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/static"))) //css file
         .mount("/", routes![
             templates::index, 
-            templates::about, 
+            templates::chart, 
+            templates::wallet,
             templates::register_get, 
             templates::register_post,
             templates::login_get,

@@ -24,8 +24,8 @@
       {% if is_authenticated %}
       <div class="collapse navbar-collapse" id="navbarToggle">
         <div class="navbar-nav mr-auto">
-          <a class="nav-item nav-link" href="#">Charts</a>
-          <a class="nav-item nav-link" href="/about">Wallet</a>
+          <a class="nav-item nav-link" href="/chart">Charts</a>
+          <a class="nav-item nav-link" href="/wallet">Wallet</a>
         </div>
         <!-- Navbar Right Side -->
         <div class="navbar-nav">
@@ -43,11 +43,8 @@
 </header>
     <main role="main" class="container">
   <div class="row">
-    <div class="col-md-8">
-        {% block content %}
-        {% endblock %}
-    </div>
-    
+    {% block content %}
+    {% endblock %}
   </div>
 </main>
 

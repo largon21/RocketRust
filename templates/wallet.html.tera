@@ -1,0 +1,122 @@
+{% extends "Layout" %}
+
+{% block content %}
+<div class="container">
+    <h1>{{name}}</h1>
+    
+    <div class="container col-md-12 mb-2">
+        <fieldset class="container p-2">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#exampleModalCenter">
+                Add transaction
+            </button>
+        </fieldset>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="">
+                        <div class="container">
+                            <fieldset class="container border p-2">
+                                <legend class="w-auto mb-0" style="font-size:16px">Date</legend>
+                                <div class="form-group row">
+                                    <label for="text" class="col-form-label col-sm-3">Transaction date:</label>
+                                    <div class="col-sm-5">
+                                        <input type="date" class="form-control" id="text"  name="transaction_date" placeholder="Transaction date">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="container form-row">
+                            <div class="col-md-6">
+                                <fieldset class="container border p-2">
+                                    <legend class="w-auto mb-0" style="font-size:16px">Sell</legend>
+                                    <div class="form-group row">
+                                        <label for="text" class="col-form-label col-sm-3">Amount:</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" id="text"  name="sell_amount" placeholder="Sell amount">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="text" class="col-form-label col-sm-3">Currency:</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" id="text" name="sell_currenncy" placeholder="Sell currenncy">
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-6">
+                                <fieldset class="container border p-2">
+                                    <legend class="w-auto mb-0" style="font-size:16px">Buy</legend>
+                                    <div class="form-group row">
+                                        <label for="text" class="col-form-label col-sm-3">Amount:</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" id="text"  name="buy_amount" placeholder="Buy amount">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="text" class="col-form-label col-sm-3">Currency:</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" id="text" name="buy_currenncy" placeholder="Buy currenncy">
+                                        </div>
+                                    </div>
+                                    
+                                </fieldset>
+                            </div>
+                        </div>
+                        
+                        <dir class="form-group">
+                            <button class="btn btn-outline-dark" type="submit"> Add transaction </button>
+                        </dir>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Username</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+            </tr>
+            <tr>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@TwBootstrap</td>
+            </tr>
+            <tr>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+            </tr>
+            <tr>
+                <td colspan="2">Larry the Bird</td>
+                <td>@twitter</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

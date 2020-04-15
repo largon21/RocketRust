@@ -216,6 +216,7 @@ pub struct UserForm {
     username: String,
     email: String,
     password: String,
+    confirm_password: String,
 }
 
 #[derive(Serialize)]
@@ -224,6 +225,8 @@ struct TemplateContextRegister {
     error_username: bool,
     error_email: bool,
     error_password: bool,
+    error_confirm_password: bool,
+
 }
 
 fn register_validate_username(username: String) -> bool {
@@ -282,22 +285,32 @@ fn register_validate_password(user_password: String) -> bool {
     }
 }
 
+fn register_validate_confirm_password(str1: String, str2: String) -> bool {
+    if str1 == str2 {
+        return false;
+    }    
+    else {
+        return true;
+    }
+}
+
 #[post("/register", data = "<userdata>")]
 pub fn register_post(userdata: Form<UserForm>) -> Result<Redirect, Template> {
     let error_username: bool = register_validate_username(userdata.username.clone());
     let error_email: bool = register_validate_email(userdata.email.clone());
     let error_password: bool = register_validate_password(userdata.password.clone()); 
+    let error_confirm_password: bool 
+        = register_validate_confirm_password(userdata.password.clone(), userdata.confirm_password.clone());
 
     let name: String;
 
-    if error_username || error_email || error_password {
-        name = format!("registration faild - error");
-        let context = TemplateContextRegister {name, error_username, error_email, error_password};
+    if error_username || error_email || error_password || error_confirm_password {
+        name = format!("Registration faild - error");
+        let context = TemplateContextRegister {name, error_username, error_email, error_password, error_confirm_password};
         return Err(Template::render("register", &context));
     }
     else {
         let password = userdata.password.clone();
-        
 
         match hash(&password, DEFAULT_COST) {
             Ok(hashed_password) => {
@@ -311,23 +324,24 @@ pub fn register_post(userdata: Form<UserForm>) -> Result<Redirect, Template> {
                 return Ok(Redirect::to("/login"));
             }
             Err(_) => {
-                name = format!("registration faild");
+                name = format!("Registration faild");
             }
         }
 
-        let context = TemplateContextRegister {name, error_username, error_email, error_password};
+        let context = TemplateContextRegister {name, error_username, error_email, error_password, error_confirm_password};
         return Err(Template::render("register", &context));
     }
 }
 
 #[get("/register")]
 pub fn register_get() -> Template {
-    let name = "TO DO - register".to_string();
+    let name = "".to_string();
     let context = TemplateContextRegister {
         name, 
         error_username: false, 
         error_email: false, 
-        error_password: false
+        error_password: false,
+        error_confirm_password: false,
     };
     Template::render("register", &context)
 }
@@ -427,12 +441,66 @@ pub fn index(cookies: Cookies) -> Template {
     }
 }
 
-//<-----------------About----------------->
-#[get("/about")]
-pub fn about() -> Template {
-    let name = "TO DO - about".to_string();
-    let context = TemplateContext {name};
-    Template::render("about", &context)
+//<-----------------Chart----------------->
+#[get("/chart")]
+pub fn chart(cookies: Cookies) -> Template {
+    match get_user_id_from_cookies(cookies) {
+        Ok(user_id) => {
+            if check_user_id(user_id as i32) {
+                let context = TemplateContextIndex {
+                    name: "".to_string(),
+                    is_authenticated: true
+                };
+                return Template::render("chart", &context);
+            } 
+            else {
+                let context = TemplateContextIndex {
+                    name: "TO DO - home - you are not logged in".to_string(),
+                    is_authenticated: false
+                };
+                return Template::render("index", &context);
+            }
+        }
+        Err(_not_logged_in) => {
+            let context = TemplateContextIndex {
+                name: "TO DO - home - login Page".to_string(),
+                is_authenticated: false
+            };
+            return Template::render("index", &context);
+        }
+
+    }
+}
+
+//<-----------------wallet----------------->
+#[get("/wallet")]
+pub fn wallet(cookies: Cookies) -> Template {
+    match get_user_id_from_cookies(cookies) {
+        Ok(user_id) => {
+            if check_user_id(user_id as i32) {
+                let context = TemplateContextIndex {
+                    name: "".to_string(),
+                    is_authenticated: true
+                };
+                return Template::render("wallet", &context);
+            } 
+            else {
+                let context = TemplateContextIndex {
+                    name: "TO DO - home - you are not logged in".to_string(),
+                    is_authenticated: false
+                };
+                return Template::render("index", &context);
+            }
+        }
+        Err(_not_logged_in) => {
+            let context = TemplateContextIndex {
+                name: "TO DO - home - login Page".to_string(),
+                is_authenticated: false
+            };
+            return Template::render("index", &context);
+        }
+
+    }
 }
 
 //<-----------------Logout----------------->
