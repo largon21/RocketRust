@@ -2,11 +2,11 @@ table! {
     transactions (id) {
         id -> Integer,
         user_id -> Integer,
-        date_transaction -> Integer,
+        date_transaction -> Text,
         sell_amount -> Integer,
-        sell_currency -> Integer,
+        sell_currency -> Text,
         buy_amount -> Integer,
-        buy_currency -> Integer,
+        buy_currency -> Text,
         price_for_one -> Integer,
     }
 }

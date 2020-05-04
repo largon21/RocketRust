@@ -10,7 +10,7 @@ use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
 use std::env;
 
-use self::models::{NewUser, NewUserSession}; //{NewUser, User};
+use self::models::{NewUser, NewUserSession, NewTransaction}; //{NewUser, User, Transaction};
 
 pub fn establish_connection() -> SqliteConnection {
     dotenv().ok();
