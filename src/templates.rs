@@ -5,7 +5,7 @@ use rocket::request::Form;
 
 use hello_rocket::*;
 use time::Duration;
-use hello_rocket::models::{UserSession, User};
+use hello_rocket::models::{UserSession, User, Transaction};
 use diesel::prelude::*;
 use bcrypt::{DEFAULT_COST, hash, verify};
 
@@ -473,8 +473,17 @@ pub fn chart(cookies: Cookies) -> Template {
 }
 
 //<-----------------wallet----------------->
+#[derive(FromForm)]
+pub struct TransactionForm {
+    date_transaction: String,
+    sell_amount: i32,
+    sell_currency: String,
+    buy_amount: i32,
+    buy_currency: String,
+}
+
 #[get("/wallet")]
-pub fn wallet(cookies: Cookies) -> Template {
+pub fn wallet_get(cookies: Cookies) -> Template {
     match get_user_id_from_cookies(cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
@@ -486,7 +495,7 @@ pub fn wallet(cookies: Cookies) -> Template {
             } 
             else {
                 let context = TemplateContextIndex {
-                    name: "TO DO - home - you are not logged in".to_string(),
+                    name: "TO DO - wallet - you are not logged in".to_string(),
                     is_authenticated: false
                 };
                 return Template::render("index", &context);
@@ -494,10 +503,58 @@ pub fn wallet(cookies: Cookies) -> Template {
         }
         Err(_not_logged_in) => {
             let context = TemplateContextIndex {
-                name: "TO DO - home - login Page".to_string(),
+                name: "TO DO - wallet - login Page".to_string(),
                 is_authenticated: false
             };
             return Template::render("index", &context);
+        }
+
+    }
+}
+
+#[post("/wallet", data = "<transaction>")]
+pub fn wallet_post(mut cookies: Cookies, transaction: Form<TransactionForm>) -> Result<Redirect, Template> {
+    match get_user_id_from_cookies(cookies) {
+        Ok(user_id) => {
+            if check_user_id(user_id as i32) {
+                let context = TemplateContextIndex {
+                    name: "TO DO - wallet - you are logged in".to_string(),
+                    is_authenticated: true
+                };
+
+                let mut price_for_one = 0;
+
+                if transaction.sell_amount != 0 {
+                    price_for_one = transaction.buy_amount/transaction.sell_amount;
+                }
+
+                let connection = establish_connection();
+                create_new_transaction(&connection,
+                    user_id as i32,
+                    transaction.date_transaction.to_string().clone(),
+                    transaction.sell_amount.clone(),
+                    transaction.sell_currency.to_string().clone(),
+                    transaction.buy_amount.clone(),
+                    transaction.buy_currency.to_string().clone(),
+                    price_for_one,
+                );
+
+                return Ok(Redirect::to("/wallet"));
+            } 
+            else {
+                let context = TemplateContextIndex {
+                    name: "TO DO - wallet - you are not logged in".to_string(),
+                    is_authenticated: false
+                };
+                return Err(Template::render("index", &context));
+            }
+        }
+        Err(_not_logged_in) => {
+            let context = TemplateContextIndex {
+                name: "TO DO - wallet - login Page".to_string(),
+                is_authenticated: false
+            };
+            return Err(Template::render("index", &context))
         }
 
     }

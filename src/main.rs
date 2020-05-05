@@ -17,7 +17,8 @@ fn main() {
         .mount("/", routes![
             templates::index, 
             templates::chart, 
-            templates::wallet,
+            templates::wallet_get,
+            templates::wallet_post,
             templates::register_get, 
             templates::register_post,
             templates::login_get,

@@ -61,3 +61,32 @@ pub fn create_new_user(
         .expect("Error saving new user");
 
 }
+
+pub fn create_new_transaction(
+    conn: &SqliteConnection,
+    user_id: i32,
+    date_transaction: String,
+    sell_amount: i32,
+    sell_currency: String,
+    buy_amount: i32,
+    buy_currency: String,
+    price_for_one: i32,
+) {
+    use schema::transactions;
+
+    let new_transaction = NewTransaction {
+        user_id,
+        date_transaction,
+        sell_amount,
+        sell_currency,
+        buy_amount,
+        buy_currency,
+        price_for_one,
+    };
+
+    diesel::insert_into(transactions::table)
+        .values(&new_transaction)
+        .execute(conn)
+        .expect("Error saving new transaction");
+
+}
