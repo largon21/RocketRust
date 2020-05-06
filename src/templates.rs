@@ -476,14 +476,30 @@ pub fn chart(cookies: Cookies) -> Template {
 #[derive(FromForm)]
 pub struct TransactionForm {
     date_transaction: String,
-    sell_amount: i32,
+    sell_amount: f32,
     sell_currency: String,
-    buy_amount: i32,
+    buy_amount: f32,
     buy_currency: String,
+}
+
+#[derive(Serialize)]
+struct TemplateContextWallet {
+    name: String,
+    error_date_transaction: bool,
+    error_sell_amount: bool,
+    error_buy_amount: bool,
+    error_sell_currency: bool,
+    error_buy_currency: bool,
 }
 
 #[get("/wallet")]
 pub fn wallet_get(cookies: Cookies) -> Template {
+    let error_date_transaction: bool = false;
+    let error_sell_amount: bool = false;
+    let error_buy_amount: bool = false;
+    let error_sell_currency: bool = false;
+    let error_buy_currency: bool = false;
+
     match get_user_id_from_cookies(cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
@@ -522,9 +538,9 @@ pub fn wallet_post(mut cookies: Cookies, transaction: Form<TransactionForm>) -> 
                     is_authenticated: true
                 };
 
-                let mut price_for_one = 0;
+                let mut price_for_one = 0.0;
 
-                if transaction.sell_amount != 0 {
+                if transaction.sell_amount != 0.0 {
                     price_for_one = transaction.buy_amount/transaction.sell_amount;
                 }
 

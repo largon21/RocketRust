@@ -31,7 +31,10 @@
                                 <div class="form-group row">
                                     <label for="text" class="col-form-label col-sm-3">Transaction date:</label>
                                     <div class="col-sm-5">
-                                        <input type="date" class="form-control" id="text"  name="date_transaction" placeholder="Transaction date">
+                                        <input type="date" class="form-control" id="text"  name="date_transaction" placeholder="Transaction date" required>
+                                        <div class="invalid-feedback">
+                                            <span>No valid date transaction.</span>
+                                        </div>
                                     </div>
                                 </div>
                             </fieldset>
@@ -44,14 +47,17 @@
                                     <div class="form-group row">
                                         <label for="text" class="col-form-label col-sm-3">Amount:</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" id="text"  name="sell_amount" placeholder="Sell amount">
+                                            <input type="number" step="any" class="form-control" id="text"  name="sell_amount" placeholder="Sell amount" required>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid sell amount.
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <label for="FormControlSelect1" class="col-form-label col-sm-3">Currency:</label>
                                         <div class="col-sm-9">
-                                            <select type="text" class="form-control" id="FormControlSelect1" name="sell_currency">
+                                            <select type="text" class="form-control" id="FormControlSelect1" name="sell_currency" required>
                                                 <option>PLN</option>
                                                 <option>USD</option>
                                                 <option>EUR</option>
@@ -61,6 +67,9 @@
                                                 <option>LTC</option>
                                                 <option>XRP</option>
                                             </select>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid sell currency.
+                                            </div>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -71,14 +80,17 @@
                                     <div class="form-group row">
                                         <label for="text" class="col-form-label col-sm-3">Amount:</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" id="text"  name="buy_amount" placeholder="Buy amount">
+                                            <input type="number" step="any" class="form-control" id="text"  name="buy_amount" placeholder="Buy amount" required>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid buy amount.
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <label for="FormControlSelect2" class="col-form-label col-sm-3">Currency:</label>
                                         <div class="col-sm-9">
-                                            <select type="text" class="form-control" id="FormControlSelect2" name="buy_currency">
+                                            <select type="text" class="form-control" id="FormControlSelect2" name="buy_currency" required>
                                                 <option>BTC</option>
                                                 <option>BCH</option>
                                                 <option>ETH</option>
@@ -88,6 +100,9 @@
                                                 <option>USD</option>
                                                 <option>EUR</option>
                                             </select>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid buy currency.
+                                            </div>
                                         </div>
                                     </div>
                                     

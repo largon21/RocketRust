@@ -3,11 +3,11 @@ table! {
         id -> Integer,
         user_id -> Integer,
         date_transaction -> Text,
-        sell_amount -> Integer,
+        sell_amount -> Float,
         sell_currency -> Text,
-        buy_amount -> Integer,
+        buy_amount -> Float,
         buy_currency -> Text,
-        price_for_one -> Integer,
+        price_for_one -> Float,
     }
 }
 

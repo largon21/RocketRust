@@ -66,11 +66,11 @@ pub fn create_new_transaction(
     conn: &SqliteConnection,
     user_id: i32,
     date_transaction: String,
-    sell_amount: i32,
+    sell_amount: f32,
     sell_currency: String,
-    buy_amount: i32,
+    buy_amount: f32,
     buy_currency: String,
-    price_for_one: i32,
+    price_for_one: f32,
 ) {
     use schema::transactions;
 

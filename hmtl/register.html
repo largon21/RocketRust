@@ -1,69 +1,71 @@
 {% extends "Layout" %}
 {% block content %}
-<h1>{{name}}</h1>
-<div class="content-section">
-    <form method="POST" action="">
-        <fieldset classs="form-group">
-            <legend class="border-bottom mb-4">Join Today</legend>
-            
-            <dir class="form-group">
-                <label class="form-control-label" for="text">Username: </label>
-                {% if error_username %}
-                    <input type="text" class="form-control form-control-lg is-invalid" id="text" name="username" placeholder="Username">
-                    <div class="invalid-feedback">
-                        <span>Wrong username</span>
-                    </div>
-                {% else %}
-                    <input type="text" class="form-control form-control-lg" id="text" name="username" placeholder="Username">
-                {% endif %}
-            </dir>
+<div class="col-md-8 container">
+    <h1>{{name}}</h1>
+    <div class="content-section">
+        <form method="POST" action="">
+            <fieldset classs="form-group">
+                <legend class="border-bottom mb-4">Join Today</legend>
+                
+                <dir class="form-group">
+                    <label class="form-control-label" for="text">Username: </label>
+                    {% if error_username %}
+                        <input type="text" class="form-control form-control-lg is-invalid" id="text" name="username" placeholder="Username">
+                        <div class="invalid-feedback">
+                            <span>Wrong username</span>
+                        </div>
+                    {% else %}
+                        <input type="text" class="form-control form-control-lg" id="text" name="username" placeholder="Username">
+                    {% endif %}
+                </dir>
+
+                <dir class="form-group">
+                    <label class="form-control-label" for="text">Email: </label>
+                    {% if error_email %}
+                        <input type="email" class="form-control form-control-lg is-invalid" id="text" name="email" placeholder="Email">
+                        <div class="invalid-feedback">
+                            <span>Wrong email</span>
+                        </div>
+                    {% else %}
+                        <input type="email" class="form-control form-control-lg" id="text" name="email" placeholder="Email">
+                    {% endif %}
+                </dir>
+
+                <dir class="form-group">
+                    <label class="form-control-label" for="pwd">Password:</label>
+                    {% if error_password %}
+                        <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="password" placeholder="Password">
+                        <div class="invalid-feedback">
+                            <span>Wrong password</span>
+                        </div>
+                    {% else %}
+                        <input type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
+                    {% endif %}
+                </dir>
+
+                <dir class="form-group">
+                    <label class="form-control-label" for="pwd">Confirm password:</label>
+                    {% if error_confirm_password %}
+                        <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
+                        <div class="invalid-feedback">
+                            <span>Wrong password</span>
+                        </div>
+                    {% else %}
+                        <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
+                    {% endif %}
+                </dir>
+
+            </fieldset>
 
             <dir class="form-group">
-                <label class="form-control-label" for="text">Email: </label>
-                {% if error_email %}
-                    <input type="email" class="form-control form-control-lg is-invalid" id="text" name="email" placeholder="Email">
-                    <div class="invalid-feedback">
-                        <span>Wrong email</span>
-                    </div>
-                {% else %}
-                    <input type="email" class="form-control form-control-lg" id="text" name="email" placeholder="Email">
-                {% endif %}
+                <button class="btn btn-outline-dark" type="submit"> Register </button>
             </dir>
-
-            <dir class="form-group">
-                <label class="form-control-label" for="pwd">Password:</label>
-                {% if error_password %}
-                    <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="password" placeholder="Password">
-                    <div class="invalid-feedback">
-                        <span>Wrong password</span>
-                    </div>
-                {% else %}
-                    <input type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
-                {% endif %}
-            </dir>
-
-            <dir class="form-group">
-                <label class="form-control-label" for="pwd">Confirm password:</label>
-                {% if error_confirm_password %}
-                    <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
-                    <div class="invalid-feedback">
-                        <span>Wrong password</span>
-                    </div>
-                {% else %}
-                    <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
-                {% endif %}
-            </dir>
-
-        </fieldset>
-
-        <dir class="form-group">
-            <button class="btn btn-outline-dark" type="submit"> Register </button>
-        </dir>
-    </form>
-</div>
-<div class="border-top pt-3">
-    <small class="text-muted">
-        Already Have An Account? <a class="ml-2" href="/login">Sign In</a>
-    </small>
+        </form>
+    </div>
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            Already Have An Account? <a class="ml-2" href="/login">Sign In</a>
+        </small>
+    </div>
 </div>
 {% endblock content %}
