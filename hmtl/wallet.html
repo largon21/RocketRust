@@ -123,31 +123,29 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Username</th>
+                    <th>ID</th>
+                    <th>Date transaction</th>
+                    <th>Sell amount</th>
+                    <th>Sell currency</th>
+                    <th>Buy amount</th>
+                    <th>Buy currency</th>
+                    <th>Price for one</th>
                 </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
-            <tr>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@TwBootstrap</td>
-            </tr>
-            <tr>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-            </tr>
-            <tr>
-                <td colspan="2">Larry the Bird</td>
-                <td>@twitter</td>
-            </tr>
+            {% if is_authenticated %} 
+                {% for transaction in context_transactions %}
+                    <tr>
+                        <td>{{transaction.id}}</td>
+                        <td>{{transaction.date_transaction}}</td>
+                        <td>{{transaction.sell_amount}}</td>
+                        <td>{{transaction.sell_currency}}</td>
+                        <td>{{transaction.buy_amount}}</td>
+                        <td>{{transaction.buy_currency}}</td>
+                        <td>{{transaction.price_for_one}} {{transaction.sell_currency}}/{{transaction.buy_currency}}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
             </tbody>
         </table>
     </div>

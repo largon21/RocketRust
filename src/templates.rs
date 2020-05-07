@@ -5,7 +5,7 @@ use rocket::request::Form;
 
 use hello_rocket::*;
 use time::Duration;
-use hello_rocket::models::{UserSession, User, Transaction};
+use hello_rocket::models::{UserSession, Transaction, User};
 use diesel::prelude::*;
 use bcrypt::{DEFAULT_COST, hash, verify};
 
@@ -473,6 +473,21 @@ pub fn chart(cookies: Cookies) -> Template {
 }
 
 //<-----------------wallet----------------->
+fn get_transactions_from_db(current_user_id: i32) -> Vec<Transaction> {
+    use hello_rocket::schema::transactions::dsl::*;
+
+    let connection = establish_connection();
+
+    let results: Vec<Transaction> = transactions
+        .filter(user_id.eq(current_user_id))
+        .load::<Transaction>(&connection)
+        .expect("Error loading sessions");
+        
+    results
+
+    
+} 
+
 #[derive(FromForm)]
 pub struct TransactionForm {
     date_transaction: String,
@@ -485,34 +500,30 @@ pub struct TransactionForm {
 #[derive(Serialize)]
 struct TemplateContextWallet {
     name: String,
-    error_date_transaction: bool,
-    error_sell_amount: bool,
-    error_buy_amount: bool,
-    error_sell_currency: bool,
-    error_buy_currency: bool,
+    is_authenticated: bool,
+    context_transactions: Vec<Transaction>,
 }
 
 #[get("/wallet")]
 pub fn wallet_get(cookies: Cookies) -> Template {
-    let error_date_transaction: bool = false;
-    let error_sell_amount: bool = false;
-    let error_buy_amount: bool = false;
-    let error_sell_currency: bool = false;
-    let error_buy_currency: bool = false;
+    let mut context_transactions: Vec<Transaction>;
 
     match get_user_id_from_cookies(cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
-                let context = TemplateContextIndex {
+                context_transactions = get_transactions_from_db(user_id as i32);
+
+                let context = TemplateContextWallet {
                     name: "".to_string(),
-                    is_authenticated: true
+                    is_authenticated: true,
+                    context_transactions,
                 };
                 return Template::render("wallet", &context);
             } 
             else {
                 let context = TemplateContextIndex {
                     name: "TO DO - wallet - you are not logged in".to_string(),
-                    is_authenticated: false
+                    is_authenticated: false,
                 };
                 return Template::render("index", &context);
             }
@@ -520,7 +531,7 @@ pub fn wallet_get(cookies: Cookies) -> Template {
         Err(_not_logged_in) => {
             let context = TemplateContextIndex {
                 name: "TO DO - wallet - login Page".to_string(),
-                is_authenticated: false
+                is_authenticated: false,
             };
             return Template::render("index", &context);
         }

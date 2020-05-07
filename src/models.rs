@@ -1,4 +1,5 @@
 use super::schema::*;
+use serde_derive::Serialize;
 
 //---------TABLE users-------------
 #[derive(Queryable)]
@@ -33,6 +34,7 @@ pub struct NewUserSession {
 }
 
 //---------TABLE transactions-------------
+#[derive(Serialize)]
 #[derive(Queryable)]
 pub struct Transaction {
     pub id: i32,
