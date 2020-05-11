@@ -1,3 +1,9 @@
+extern crate rocket_multipart_form_data;
+
+use rocket::Data;
+use rocket::http::ContentType;
+use rocket_multipart_form_data::{mime, MultipartFormDataOptions, MultipartFormData, MultipartFormDataField, TextField, Repetition};
+
 use rocket_contrib::templates::Template;
 use rocket::http::{Cookie, Cookies}; 
 use rocket::response::{Flash, Redirect};
@@ -539,8 +545,8 @@ pub fn wallet_get(cookies: Cookies) -> Template {
     }
 }
 
-#[post("/wallet", data = "<transaction>")]
-pub fn wallet_post(mut cookies: Cookies, transaction: Form<TransactionForm>) -> Result<Redirect, Template> {
+#[post("/wallet/add_transaction", data = "<transaction>")]
+pub fn wallet_post_add(mut cookies: Cookies, transaction: Form<TransactionForm>) -> Result<Redirect, Template> {
     match get_user_id_from_cookies(cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
@@ -565,6 +571,86 @@ pub fn wallet_post(mut cookies: Cookies, transaction: Form<TransactionForm>) -> 
                     transaction.buy_currency.to_string().clone(),
                     price_for_one,
                 );
+
+                return Ok(Redirect::to("/wallet"));
+            } 
+            else {
+                let context = TemplateContextIndex {
+                    name: "TO DO - wallet - you are not logged in".to_string(),
+                    is_authenticated: false
+                };
+                return Err(Template::render("index", &context));
+            }
+        }
+        Err(_not_logged_in) => {
+            let context = TemplateContextIndex {
+                name: "TO DO - wallet - login Page".to_string(),
+                is_authenticated: false
+            };
+            return Err(Template::render("index", &context))
+        }
+
+    }
+}
+
+fn remove_transaction(active_user_id: i32, transaction_id: String) {
+    use hello_rocket::schema::transactions::dsl::*;
+
+    let transaction_id: i32 = transaction_id.parse().unwrap();
+    let connection = establish_connection();
+
+    let num_deleted = diesel::
+        delete(
+            transactions
+            .filter(user_id.eq(active_user_id))
+            .filter(id.eq(transaction_id))
+        )
+        .execute(&connection)
+        .expect("Error deleting posts");
+
+}
+
+#[post("/wallet/remove_transactions", data = "<data>")]
+pub fn wallet_post_remove(content_type: &ContentType, data: Data, mut cookies: Cookies) -> Result<Redirect, Template> {
+    match get_user_id_from_cookies(cookies) {
+        Ok(user_id) => {
+            if check_user_id(user_id as i32) {
+                // let context = TemplateContextIndex {
+                //     name: "TO DO - wallet - you are logged in".to_string(),
+                //     is_authenticated: true
+                // };
+
+                let mut options = MultipartFormDataOptions::new();
+                options.allowed_fields
+                       .push(MultipartFormDataField::text("transactions_to_remove").content_type(Some(mime::STAR_STAR))
+                       .repetition(Repetition::infinite()));
+
+                let multipart_form_data = MultipartFormData::parse(content_type, data, options).unwrap();
+
+                let transactions_to_remove = multipart_form_data.texts.get("transactions_to_remove");
+
+                if let Some(transactions_to_remove) = transactions_to_remove {
+                    match transactions_to_remove {
+                        TextField::Single(transaction) => {
+                            let _content_type = &transaction.content_type;
+                            let _file_name = &transaction.file_name;
+                            let transaction_id = &transaction.text;
+                            // You can now deal with the text data.
+                            remove_transaction(user_id as i32, transaction_id.to_string());
+                        }
+                        TextField::Multiple(transactions) => {
+                            // Because we put "array_max_length_3" field to the allowed_fields for three times, this arm will probably be matched.
+            
+                            for transaction in transactions { // The max length of the "texts" variable is 3
+                                let _content_type = &transaction.content_type;
+                                let _file_name = &transaction.file_name;
+                                let transaction_id = &transaction.text;
+                                // You can now deal with the text data.
+                                remove_transaction(user_id as i32, transaction_id.to_string());
+                            }
+                        }
+                    }
+                }
 
                 return Ok(Redirect::to("/wallet"));
             } 

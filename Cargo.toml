@@ -16,6 +16,7 @@ dotenv = "0.15.0"
 rand = "0.4.2"
 time = "0.1"
 bcrypt = "0.6"
+rocket-multipart-form-data = "0.8.1"
 
 [dependencies.rocket_contrib]
 version = "0.4.3"

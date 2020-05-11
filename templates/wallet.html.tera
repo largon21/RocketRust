@@ -3,14 +3,17 @@
 {% block content %}
 <div class="container">
     <h1>{{name}}</h1>
-    
-    <div class="container col-md-12 mb-2">
-        <fieldset class="container p-2">
+
+    <div class="form-group row">
+        <div class="col-md-6">
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#exampleModalCenter">
                 Add transaction
             </button>
-        </fieldset>
+        </div>
+        <div class="col-md-6">
+            <button form="remove_checkbox1" class="float-right btn btn-outline-secondary" type="submit"> Remove marked </button>
+        </div>
     </div>
     
     <!-- Modal -->
@@ -24,7 +27,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="">
+                    <form method="POST" action="/wallet/add_transaction">
                         <div class="container">
                             <fieldset class="container border p-2">
                                 <legend class="w-auto mb-0" style="font-size:16px">Date</legend>
@@ -119,36 +122,44 @@
         </div>
     </div>
 
-    <div class="container">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Date transaction</th>
-                    <th>Sell amount</th>
-                    <th>Sell currency</th>
-                    <th>Buy amount</th>
-                    <th>Buy currency</th>
-                    <th>Price for one</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% if is_authenticated %} 
-                {% for transaction in context_transactions %}
+    <form method="POST" action="/wallet/remove_transactions" id="remove_checkbox1" enctype="multipart/form-data">
+        <div class="container">
+            <table class="table table-bordered">
+                <thead>
                     <tr>
-                        <td>{{transaction.id}}</td>
-                        <td>{{transaction.date_transaction}}</td>
-                        <td>{{transaction.sell_amount | round(method="ceil", precision=4)}}</td>
-                        <td>{{transaction.sell_currency}}</td>
-                        <td>{{transaction.buy_amount | round(method="ceil", precision=4)}}</td>
-                        <td>{{transaction.buy_currency}}</td>
-                        <td>{{transaction.price_for_one | round(method="ceil", precision=4) }} 
-                        {{transaction.sell_currency}}/{{transaction.buy_currency}}</td>
+                        <th>ID</th>
+                        <th>Date transaction</th>
+                        <th>Sell amount</th>
+                        <th>Sell currency</th>
+                        <th>Buy amount</th>
+                        <th>Buy currency</th>
+                        <th>Price for one</th>
+                        <th>Ckeckbox</th>
                     </tr>
-                {% endfor %}
-            {% endif %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                {% if is_authenticated %} 
+                    {% for transaction in context_transactions %}
+                        <tr>
+                            <td>{{transaction.id}}</td>
+                            <td>{{transaction.date_transaction}}</td>
+                            <td>{{transaction.sell_amount | round(method="ceil", precision=4)}}</td>
+                            <td>{{transaction.sell_currency}}</td>
+                            <td>{{transaction.buy_amount | round(method="ceil", precision=4)}}</td>
+                            <td>{{transaction.buy_currency}}</td>
+                            <td>{{transaction.price_for_one | round(method="ceil", precision=4) }} 
+                            {{transaction.sell_currency}}/{{transaction.buy_currency}}</td>
+                            <td>
+                                <div class="form-check">
+                                    <input class="container form-check-input" name="transactions_to_remove" type="checkbox" value="{{transaction.id}}">
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </form>
 </div>
 {% endblock content %}
