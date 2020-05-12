@@ -139,9 +139,10 @@
                 </thead>
                 <tbody>
                 {% if is_authenticated %} 
+                {% set my_var_numeration = 1 %}
                     {% for transaction in context_transactions %}
                         <tr>
-                            <td>{{transaction.id}}</td>
+                            <td>{{my_var_numeration}}</td>
                             <td>{{transaction.date_transaction}}</td>
                             <td>{{transaction.sell_amount | round(method="ceil", precision=4)}}</td>
                             <td>{{transaction.sell_currency}}</td>
@@ -155,6 +156,7 @@
                                 </div>
                             </td>
                         </tr>
+                        {% my_var_numeration = my_var_numeration + 1 %}
                     {% endfor %}
                 {% endif %}
                 </tbody>

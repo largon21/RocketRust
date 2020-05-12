@@ -484,13 +484,14 @@ fn get_transactions_from_db(current_user_id: i32) -> Vec<Transaction> {
 
     let connection = establish_connection();
 
-    let results: Vec<Transaction> = transactions
+    let mut results: Vec<Transaction> = transactions
         .filter(user_id.eq(current_user_id))
         .load::<Transaction>(&connection)
         .expect("Error loading sessions");
         
+    //reverse to get from the newest to the oldest
+    let results = results.into_iter().rev().collect();
     results
-
     
 } 
 
