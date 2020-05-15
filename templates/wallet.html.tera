@@ -123,18 +123,18 @@
     </div>
 
     <form method="POST" action="/wallet/remove_transactions" id="remove_checkbox1" enctype="multipart/form-data">
-        <div class="container">
-            <table class="table table-bordered">
+        <div class="container form-group">
+            <table id="dtTransactions1" class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Date transaction</th>
-                        <th>Sell amount</th>
-                        <th>Sell currency</th>
-                        <th>Buy amount</th>
-                        <th>Buy currency</th>
-                        <th>Price for one</th>
-                        <th>Ckeckbox</th>
+                        <th data-sortable="true">ID</th>
+                        <th data-sortable="true">Date transaction</th>
+                        <th data-sortable="true">Sell amount</th>
+                        <th data-sortable="true">Sell currency</th>
+                        <th data-sortable="true">Buy amount</th>
+                        <th data-sortable="true">Buy currency</th>
+                        <th data-sortable="true">Price for one</th>
+                        <th data-sortable="false">Ckeckbox</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -11,122 +11,92 @@ use rocket::request::Form;
 
 use hello_rocket::*;
 use time::Duration;
-use hello_rocket::models::{UserSession, Transaction, User};
-use diesel::prelude::*;
+use hello_rocket::models::Transaction;
 use bcrypt::{DEFAULT_COST, hash, verify};
 
+pub mod login;
+pub use login::{
+    UserLoginForm, TemplateContextLogin, 
+    get_password_hash_from_username_or_email,
+    get_user_id_from_username_or_email,
+    generate_session_token,
+    login_validate_form
+    };
 
+pub mod register;
+pub use register::{
+    UserForm, TemplateContextRegister, 
+    register_validate_username,
+    register_validate_email,
+    register_validate_password,
+    register_validate_confirm_password
+    };
 
-#[derive(Serialize)]
-struct TemplateContext {
-    name: String,
+pub mod index;
+pub use index::{
+    TemplateContextIndex, 
+    get_user_id_from_session_token,
+    get_user_id_from_cookies,
+    check_user_id
+    };
+
+pub mod wallet;
+pub use wallet::{
+    TransactionForm, 
+    TemplateContextWallet,
+    remove_transaction,
+    get_transactions_from_db
+    };
+    
+pub mod logout;
+pub use logout::remove_user_id_from_session_token;
+
+//<--------------------Account---------------------->
+#[get("/account")]
+pub fn account(cookies: Cookies) -> Template {
+    match get_user_id_from_cookies(cookies) {
+        Ok(user_id) => {
+            if check_user_id(user_id as i32) {
+                let context = TemplateContextIndex {
+                    name: "TO DO - account - you are logged in".to_string(),
+                    is_authenticated: true
+                };
+                return Template::render("account", &context);
+            } 
+            else {
+                let context = TemplateContextIndex {
+                    name: "TO DO - account - you are not logged in".to_string(),
+                    is_authenticated: false
+                };
+                return Template::render("account", &context);
+            }
+        }
+        Err(_not_logged_in) => {
+            let context = TemplateContextIndex {
+                name: "TO DO - account - login Page".to_string(),
+                is_authenticated: false
+            };
+            return Template::render("account", &context);
+        }
+
+    }
 }
-
-
 
 //<-----------------Login----------------->
-struct Username(String);
-
-#[derive(FromForm)]
-pub struct UserLoginForm {
-    username: String,
-    password: String,
-}
-
-#[derive(Serialize)]
-struct TemplateContextLogin {
-    name: String,
-    error_username: bool,
-    error_password: bool,
-}
-
-fn get_password_hash_from_username_or_email(name: String) -> Result<String, std::io::Error> {
-    use hello_rocket::schema::users::dsl::*;
-
-    let connection = establish_connection();
-
-    let results;
-
-    if name.contains("@") {
-        results = users
-            .filter(email.eq(name))
-            .limit(1)
-            .load::<User>(&connection)
-            .expect("Error loading email");
-    }
-    else {
-        results = users
-            .filter(nickname.eq(name))
-            .limit(1)
-            .load::<User>(&connection)
-            .expect("Error loading user");
-    }
-    
-    
-    if results.len() == 1 {
-        return Ok(results[0].password.to_string());
-    }
-    else {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::Other,
-            "no user found",
-        ));
-    }
-}
-
-fn get_user_id_from_username_or_email(name: String) -> Result<i32, std::io::Error> {
-    use hello_rocket::schema::users::dsl::*;
-
-    let connection = establish_connection();
-
-    let results;
-
-    if name.contains("@") {
-        results = users
-            .filter(email.eq(name))
-            .limit(1)
-            .load::<User>(&connection)
-            .expect("Error loading email");
-    }
-    else {
-        results = users
-            .filter(nickname.eq(name))
-            .limit(1)
-            .load::<User>(&connection)
-            .expect("Error loading user");
-    }
-    
-    if results.len() == 1 {
-        return Ok(results[0].id);
-    }
-    else {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::Other,
-            "no user found",
-        ));
-    }
-}
-
-fn generate_session_token(length: u8) -> Result<String, std::io::Error> {
-    let bytes: Vec<u8> = (0..length).map(|_| rand::random::<u8>()).collect();
-    let strings: Vec<String> = bytes.iter().map(|byte| format!("{:02X}", byte)).collect();
-    return Ok(strings.join(""));
-}
-
-fn login_validate_form(word: String) -> bool {
-    if word.is_empty() {
-        return true;
-    }
-    else {
-        return false;
-    }
+#[get("/login")]
+pub fn login_get() -> Template {
+    let context = TemplateContextLogin {
+        name: "".to_string(), 
+        error_username: false, 
+        error_password: false
+    };
+    Template::render("login", &context)
 }
 
 #[post("/login", data = "<user>")]
 pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Redirect, Template> {
     let error_username = login_validate_form(user.username.clone());
     let error_password = login_validate_form(user.password.clone());
-    let mut username: String = format!("");
 
 
     if error_username || error_password {
@@ -206,98 +176,18 @@ pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Red
     }
 }
 
-#[get("/login")]
-pub fn login_get() -> Template {
-    let context = TemplateContextLogin {
-        name: "".to_string(), 
-        error_username: false, 
-        error_password: false
-    };
-    Template::render("login", &context)
-}
-
 //<-----------------Register----------------->
-#[derive(FromForm)]
-pub struct UserForm {
-    username: String,
-    email: String,
-    password: String,
-    confirm_password: String,
-}
-
-#[derive(Serialize)]
-struct TemplateContextRegister {
-    name: String,
-    error_username: bool,
-    error_email: bool,
-    error_password: bool,
-    error_confirm_password: bool,
-
-}
-
-fn register_validate_username(username: String) -> bool {
-    use hello_rocket::schema::users::dsl::*;
-
-    if !username.is_empty() && username.len() >= 4 {
-        let connection = establish_connection();
-        let results = users
-            .filter(nickname.eq(username))
-            .limit(1)
-            .load::<User>(&connection)
-            .expect("Error loading email");
-
-        if results.len() == 0 {
-            return false;
-        }
-        else {
-            return true;
-        }
-        
-    }
-    else {
-        return true;
-    }
-}
-
-fn register_validate_email(user_email: String) -> bool {
-    use hello_rocket::schema::users::dsl::*;
-
-    if !user_email.is_empty() {
-        let connection = establish_connection();
-        let results = users
-            .filter(email.eq(user_email))
-            .limit(1)
-            .load::<User>(&connection)
-            .expect("Error loading email");
-
-        if results.len() == 0 {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-    else {
-        return true;
-    }
-}
-
-fn register_validate_password(user_password: String) -> bool {
-    if !user_password.is_empty() && user_password.len() >= 4 {
-        return false;
-    }    
-    else {
-        return true;
-    }
-}
-
-fn register_validate_confirm_password(str1: String, str2: String) -> bool {
-    if str1 == str2 {
-        return false;
-    }    
-    else {
-        return true;
-    }
+#[get("/register")]
+pub fn register_get() -> Template {
+    let name = "".to_string();
+    let context = TemplateContextRegister {
+        name, 
+        error_username: false, 
+        error_email: false, 
+        error_password: false,
+        error_confirm_password: false,
+    };
+    Template::render("register", &context)
 }
 
 #[post("/register", data = "<userdata>")]
@@ -326,7 +216,6 @@ pub fn register_post(userdata: Form<UserForm>) -> Result<Redirect, Template> {
                     hashed_password.clone(), 
                     userdata.email.clone()
                 );
-                // name = format!("username: {}\npassword: {}", userdata.username, hashed_password);
                 return Ok(Redirect::to("/login"));
             }
             Err(_) => {
@@ -339,84 +228,7 @@ pub fn register_post(userdata: Form<UserForm>) -> Result<Redirect, Template> {
     }
 }
 
-#[get("/register")]
-pub fn register_get() -> Template {
-    let name = "".to_string();
-    let context = TemplateContextRegister {
-        name, 
-        error_username: false, 
-        error_email: false, 
-        error_password: false,
-        error_confirm_password: false,
-    };
-    Template::render("register", &context)
-}
-
-//<-----------------Home----------------->
-fn get_user_id_from_session_token(session_token: String) -> Result<i64, std::io::Error> {
-    use hello_rocket::schema::user_sessions::dsl::*;
-
-    let connection = establish_connection();
-
-    let results = user_sessions
-        .filter(token.eq(session_token))
-        .limit(1)
-        .load::<UserSession>(&connection)
-        .expect("Error loading sessions");
-    
-    if results.len() == 1 {
-        return Ok(results[0].user_id as i64);
-    }
-    else {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::Other,
-            "no token found",
-        ));
-    }
-}
-
-fn get_user_id_from_cookies(mut cookies: Cookies) -> Result<i64, std::io::Error> {
-    match cookies.get_private("session_token") {
-        Some(cookie) => match get_user_id_from_session_token(cookie.value().to_string()) {
-            Ok(user_id) => Ok(user_id),
-            Err(error) => Err(error),
-        },
-        _ => {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
-                "no token found",
-            ));
-        }
-    }
-}
-
-#[derive(Serialize)]
-struct TemplateContextIndex {
-    name: String,
-    is_authenticated: bool,
-}
-
-fn check_user_id(user_id: i32) -> bool {
-    use hello_rocket::schema::users::dsl::*;
-
-    let connection = establish_connection();
-
-    let results = users
-        .filter(id.eq(user_id))
-        .limit(1)
-        .load::<User>(&connection)
-        .expect("Error loading email");
-
-    if results.len() == 1 {
-        return true;
-    }
-    else {
-        return false;
-    }
-
-}
-
-
+//<-----------------Index----------------->
 #[get("/")]
 pub fn index(cookies: Cookies) -> Template {
     match get_user_id_from_cookies(cookies) {
@@ -443,7 +255,6 @@ pub fn index(cookies: Cookies) -> Template {
             };
             return Template::render("index", &context);
         }
-
     }
 }
 
@@ -474,46 +285,13 @@ pub fn chart(cookies: Cookies) -> Template {
             };
             return Template::render("index", &context);
         }
-
     }
 }
 
 //<-----------------wallet----------------->
-fn get_transactions_from_db(current_user_id: i32) -> Vec<Transaction> {
-    use hello_rocket::schema::transactions::dsl::*;
-
-    let connection = establish_connection();
-
-    let mut results: Vec<Transaction> = transactions
-        .filter(user_id.eq(current_user_id))
-        .load::<Transaction>(&connection)
-        .expect("Error loading sessions");
-        
-    //reverse to get from the newest to the oldest
-    let results = results.into_iter().rev().collect();
-    results
-    
-} 
-
-#[derive(FromForm)]
-pub struct TransactionForm {
-    date_transaction: String,
-    sell_amount: f32,
-    sell_currency: String,
-    buy_amount: f32,
-    buy_currency: String,
-}
-
-#[derive(Serialize)]
-struct TemplateContextWallet {
-    name: String,
-    is_authenticated: bool,
-    context_transactions: Vec<Transaction>,
-}
-
 #[get("/wallet")]
 pub fn wallet_get(cookies: Cookies) -> Template {
-    let mut context_transactions: Vec<Transaction>;
+    let context_transactions: Vec<Transaction>;
 
     match get_user_id_from_cookies(cookies) {
         Ok(user_id) => {
@@ -542,20 +320,14 @@ pub fn wallet_get(cookies: Cookies) -> Template {
             };
             return Template::render("index", &context);
         }
-
     }
 }
 
 #[post("/wallet/add_transaction", data = "<transaction>")]
-pub fn wallet_post_add(mut cookies: Cookies, transaction: Form<TransactionForm>) -> Result<Redirect, Template> {
+pub fn wallet_post_add(cookies: Cookies, transaction: Form<TransactionForm>) -> Result<Redirect, Template> {
     match get_user_id_from_cookies(cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
-                let context = TemplateContextIndex {
-                    name: "TO DO - wallet - you are logged in".to_string(),
-                    is_authenticated: true
-                };
-
                 let mut price_for_one = 0.0;
 
                 if transaction.sell_amount != 0.0 {
@@ -590,36 +362,14 @@ pub fn wallet_post_add(mut cookies: Cookies, transaction: Form<TransactionForm>)
             };
             return Err(Template::render("index", &context))
         }
-
     }
 }
 
-fn remove_transaction(active_user_id: i32, transaction_id: String) {
-    use hello_rocket::schema::transactions::dsl::*;
-
-    let transaction_id: i32 = transaction_id.parse().unwrap();
-    let connection = establish_connection();
-
-    let num_deleted = diesel::
-        delete(
-            transactions
-            .filter(user_id.eq(active_user_id))
-            .filter(id.eq(transaction_id))
-        )
-        .execute(&connection)
-        .expect("Error deleting posts");
-
-}
-
 #[post("/wallet/remove_transactions", data = "<data>")]
-pub fn wallet_post_remove(content_type: &ContentType, data: Data, mut cookies: Cookies) -> Result<Redirect, Template> {
+pub fn wallet_post_remove(cookies: Cookies, content_type: &ContentType, data: Data) -> Result<Redirect, Template> {
     match get_user_id_from_cookies(cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
-                // let context = TemplateContextIndex {
-                //     name: "TO DO - wallet - you are logged in".to_string(),
-                //     is_authenticated: true
-                // };
 
                 let mut options = MultipartFormDataOptions::new();
                 options.allowed_fields
@@ -636,17 +386,16 @@ pub fn wallet_post_remove(content_type: &ContentType, data: Data, mut cookies: C
                             let _content_type = &transaction.content_type;
                             let _file_name = &transaction.file_name;
                             let transaction_id = &transaction.text;
-                            // You can now deal with the text data.
+                            // can now deal with the text data.
                             remove_transaction(user_id as i32, transaction_id.to_string());
                         }
                         TextField::Multiple(transactions) => {
-                            // Because we put "array_max_length_3" field to the allowed_fields for three times, this arm will probably be matched.
             
-                            for transaction in transactions { // The max length of the "texts" variable is 3
+                            for transaction in transactions {
                                 let _content_type = &transaction.content_type;
                                 let _file_name = &transaction.file_name;
                                 let transaction_id = &transaction.text;
-                                // You can now deal with the text data.
+                                // can now deal with the text data.
                                 remove_transaction(user_id as i32, transaction_id.to_string());
                             }
                         }
@@ -670,26 +419,13 @@ pub fn wallet_post_remove(content_type: &ContentType, data: Data, mut cookies: C
             };
             return Err(Template::render("index", &context))
         }
-
     }
 }
 
 //<-----------------Logout----------------->
-fn remove_user_id_from_session_token(session_token: String) {
-    use hello_rocket::schema::user_sessions::dsl::*;
-
-    let connection = establish_connection();
-
-    let num_deleted = diesel::delete(user_sessions.filter(token.eq(session_token)))
-        .execute(&connection)
-        .expect("Error deleting posts");
-
-}
-
-// Remove the `user_id` cookie.
 #[get("/logout")]
 pub fn logout(mut cookies: Cookies) -> Flash<Redirect> {
-    
+    // Remove the `user_id` cookie.
     if let Some(cookie) = cookies.get_private("session_token") {
         remove_user_id_from_session_token(cookie.value().to_string());
         cookies.remove_private(Cookie::named("session_token"));
