@@ -1,8 +1,7 @@
 {% extends "Layout" %}
 
 {% block content %}
-<div class="col-md-12">
-    <h1>{{name}}</h1>
+<div class="container-fluid">
     <!-- TradingView Widget BEGIN -->
     <div class="tradingview-widget-container">
         <div id="tradingview_5b134"></div>

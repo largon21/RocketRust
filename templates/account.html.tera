@@ -13,17 +13,150 @@
                 <a class="nav-link" id="email-tab" data-toggle="tab" href="#email" role="tab" aria-controls="Email" aria-selected="false">Email</a>
             </li>
         </ul>
-        <div class="tab-content" id="myTabContent">
+        <div class="tab-content mt-5" id="myTabContent">
             <div class="tab-pane fade show active" id="password" role="tabpanel" aria-labelledby="password-tab">
-                Password change
+                <div class="col-md-8 container">
+                    <div class="content-fluid">
+                        <div class="content-section">
+                            <form method="POST" action="" autocomplete="off">
+                                <fieldset classs="form-group">
+                                    <legend class="border-bottom mb-0">Change password</legend>
+
+                                    <dir class="form-group">
+                                        <label class="form-control-label" for="pwd">Current password:</label>
+                                        <!-- {% if error_password %}
+                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="password" placeholder="Password">
+                                            <div class="invalid-feedback">
+                                                <span>Wrong password</span>
+                                            </div>
+                                        {% else %}
+                                            <input type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
+                                        {% endif %} -->
+                                        <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Current password">
+                                    </dir>
+
+                                    <dir class="form-group">
+                                        <label class="form-control-label" for="pwd">New password:</label>
+                                        <!-- {% if error_confirm_password %}
+                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                            <div class="invalid-feedback">
+                                                <span>Wrong password</span>
+                                            </div>
+                                        {% else %}
+                                            <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                        {% endif %} -->
+                                        <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                    </dir>
+
+                                    <dir class="form-group">
+                                        <label class="form-control-label" for="pwd">Confirm password:</label>
+                                        <!-- {% if error_confirm_password %}
+                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                            <div class="invalid-feedback">
+                                                <span>Wrong password</span>
+                                            </div>
+                                        {% else %}
+                                            <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                        {% endif %} -->
+                                        <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                    </dir>
+
+                                    <dir class="form-group border-top  pt-3">
+                                        <button class="btn btn-outline-dark" type="submit"> Change password </button>
+                                    </dir>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
+
             <div class="tab-pane fade" id="username" role="tabpanel" aria-labelledby="username-tab">
-                Username change 
+                <div class="col-md-8 container">
+                    <div class="content-fluid">
+                        <div class="content-section">
+                            <form method="POST" action="" autocomplete="off">
+                                <fieldset classs="form-group">
+                                    <legend class="border-bottom mb-0">Change username</legend>
+
+                                    <dir class="form-group">
+                                        <label class="form-control-label" for="pwd">Password:</label>
+                                        <!-- {% if error_password %}
+                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="password" placeholder="Password">
+                                            <div class="invalid-feedback">
+                                                <span>Wrong password</span>
+                                            </div>
+                                        {% else %}
+                                            <input type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
+                                        {% endif %} -->
+                                        <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
+                                    </dir>
+
+                                    <dir class="form-group">
+                                        <label class="form-control-label" for="pwd">New username:</label>
+                                        <!-- {% if error_confirm_password %}
+                                            <input type="text" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                            <div class="invalid-feedback">
+                                                <span>Wrong password</span>
+                                            </div>
+                                        {% else %}
+                                            <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                        {% endif %} -->
+                                        <input type="text" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="New username">
+                                    </dir>
+
+                                    <dir class="form-group border-top  pt-3">
+                                        <button class="btn btn-outline-dark" type="submit"> Change username </button>
+                                    </dir>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="tab-pane fade" id="email" role="tabpanel" aria-labelledby="email-tab">
-                Email change
+                <div class="col-md-8 container">
+                    <div class="content-fluid">
+                        <div class="content-section">
+                            <form method="POST" action="" autocomplete="off">
+                                <fieldset classs="form-group">
+                                    <legend class="border-bottom mb-0">Change email</legend>
+
+                                    <dir class="form-group">
+                                        <label class="form-control-label" for="pwd">Password:</label>
+                                        <!-- {% if error_password %}
+                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="password" placeholder="Password">
+                                            <div class="invalid-feedback">
+                                                <span>Wrong password</span>
+                                            </div>
+                                        {% else %}
+                                            <input type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
+                                        {% endif %} -->
+                                        <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
+                                    </dir>
+
+                                    <dir class="form-group">
+                                        <label class="form-control-label" for="pwd">New email:</label>
+                                        <!-- {% if error_confirm_password %}
+                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                            <div class="invalid-feedback">
+                                                <span>Wrong password</span>
+                                            </div>
+                                        {% else %}
+                                            <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                        {% endif %} -->
+                                        <input type="text" class="form-control form-control-lg" id="pwd" name="#" placeholder="New email">
+                                    </dir>
+
+                                    <dir class="form-group border-top  pt-3">
+                                        <button class="btn btn-outline-dark" type="submit"> Change email </button>
+                                    </dir>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

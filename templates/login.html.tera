@@ -33,7 +33,7 @@
             </fieldset>
 
             <dir class="form-group">
-                <button class="btn btn-outline-dark" type="submit"> Loigin </button>
+                <button class="btn btn-outline-dark" type="submit"> Log in </button>
             </dir>
             
             <small class="text-muted ml-2">
