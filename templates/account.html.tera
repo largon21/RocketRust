@@ -14,9 +14,17 @@
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="password" role="tabpanel" aria-labelledby="password-tab">Password change</div>
-            <div class="tab-pane fade" id="username" role="tabpanel" aria-labelledby="username-tab">Username change</div>
-            <div class="tab-pane fade" id="email" role="tabpanel" aria-labelledby="email-tab">Email change</div>
+            <div class="tab-pane fade show active" id="password" role="tabpanel" aria-labelledby="password-tab">
+                Password change
+            </div>
+            
+            <div class="tab-pane fade" id="username" role="tabpanel" aria-labelledby="username-tab">
+                Username change 
+            </div>
+
+            <div class="tab-pane fade" id="email" role="tabpanel" aria-labelledby="email-tab">
+                Email change
+            </div>
         </div>
     </div>
 {% endblock content %}
