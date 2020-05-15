@@ -28,7 +28,7 @@
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href="/chart">Charts</a>
-              <a class="nav-item nav-link" href="/wallet">Wallet</a>
+              <a class="nav-item nav-link" href="/wallet_transactions">Wallet</a>
             </div>
             <!-- Navbar Right Side -->
             <div class="nav navbar-nav">

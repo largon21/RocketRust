@@ -289,8 +289,8 @@ pub fn chart(cookies: Cookies) -> Template {
 }
 
 //<-----------------wallet----------------->
-#[get("/wallet")]
-pub fn wallet_get(cookies: Cookies) -> Template {
+#[get("/wallet_transactions")]
+pub fn wallet_transactions_get(cookies: Cookies) -> Template {
     let context_transactions: Vec<Transaction>;
 
     match get_user_id_from_cookies(cookies) {
@@ -303,7 +303,7 @@ pub fn wallet_get(cookies: Cookies) -> Template {
                     is_authenticated: true,
                     context_transactions,
                 };
-                return Template::render("wallet", &context);
+                return Template::render("wallet_transactions", &context);
             } 
             else {
                 let context = TemplateContextIndex {
@@ -323,8 +323,8 @@ pub fn wallet_get(cookies: Cookies) -> Template {
     }
 }
 
-#[post("/wallet/add_transaction", data = "<transaction>")]
-pub fn wallet_post_add(cookies: Cookies, transaction: Form<TransactionForm>) -> Result<Redirect, Template> {
+#[post("/wallet_transactions/add_transaction", data = "<transaction>")]
+pub fn wallet_transactions_post_add(cookies: Cookies, transaction: Form<TransactionForm>) -> Result<Redirect, Template> {
     match get_user_id_from_cookies(cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
@@ -345,7 +345,7 @@ pub fn wallet_post_add(cookies: Cookies, transaction: Form<TransactionForm>) -> 
                     price_for_one,
                 );
 
-                return Ok(Redirect::to("/wallet"));
+                return Ok(Redirect::to("/wallet_transactions"));
             } 
             else {
                 let context = TemplateContextIndex {
@@ -365,8 +365,8 @@ pub fn wallet_post_add(cookies: Cookies, transaction: Form<TransactionForm>) -> 
     }
 }
 
-#[post("/wallet/remove_transactions", data = "<data>")]
-pub fn wallet_post_remove(cookies: Cookies, content_type: &ContentType, data: Data) -> Result<Redirect, Template> {
+#[post("/wallet_transactions/remove_transactions", data = "<data>")]
+pub fn wallet_transactions_post_remove(cookies: Cookies, content_type: &ContentType, data: Data) -> Result<Redirect, Template> {
     match get_user_id_from_cookies(cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
@@ -402,7 +402,7 @@ pub fn wallet_post_remove(cookies: Cookies, content_type: &ContentType, data: Da
                     }
                 }
 
-                return Ok(Redirect::to("/wallet"));
+                return Ok(Redirect::to("/wallet_transactions"));
             } 
             else {
                 let context = TemplateContextIndex {
