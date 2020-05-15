@@ -38,14 +38,14 @@
                                     <dir class="form-group">
                                         <label class="form-control-label" for="pwd">New password:</label>
                                         <!-- {% if error_confirm_password %}
-                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="new_password" placeholder="New password">
                                             <div class="invalid-feedback">
                                                 <span>Wrong password</span>
                                             </div>
                                         {% else %}
                                             <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
                                         {% endif %} -->
-                                        <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                        <input type="password" class="form-control form-control-lg" id="pwd" name="new_password" placeholder="New password">
                                     </dir>
 
                                     <dir class="form-group">
