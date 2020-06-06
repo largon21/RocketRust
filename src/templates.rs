@@ -330,8 +330,8 @@ pub fn wallet_transactions_post_add(cookies: Cookies, transaction: Form<Transact
             if check_user_id(user_id as i32) {
                 let mut price_for_one = 0.0;
 
-                if transaction.sell_amount != 0.0 {
-                    price_for_one = transaction.buy_amount/transaction.sell_amount;
+                if transaction.buy_amount != 0.0 {
+                    price_for_one = transaction.sell_amount/transaction.buy_amount;
                 }
 
                 let connection = establish_connection();
