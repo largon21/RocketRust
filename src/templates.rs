@@ -20,16 +20,16 @@ pub use login::{
     get_password_hash_from_username_or_email,
     get_user_id_from_username_or_email,
     generate_session_token,
-    login_validate_form
+    error_login_validate_empty_form
     };
 
 pub mod register;
 pub use register::{
     UserForm, TemplateContextRegister, 
-    register_validate_username,
-    register_validate_email,
-    register_validate_password,
-    register_validate_confirm_password
+    error_register_validate_username,
+    error_register_validate_email,
+    error_register_validate_password,
+    error_register_validate_confirm_password
     };
 
 pub mod index;
@@ -51,36 +51,18 @@ pub use wallet::{
 pub mod logout;
 pub use logout::remove_user_id_from_session_token;
 
-//<--------------------Account---------------------->
-#[get("/account")]
-pub fn account(cookies: Cookies) -> Template {
-    match get_user_id_from_cookies(cookies) {
-        Ok(user_id) => {
-            if check_user_id(user_id as i32) {
-                let context = TemplateContextIndex {
-                    name: "TO DO - account - you are logged in".to_string(),
-                    is_authenticated: true
-                };
-                return Template::render("account", &context);
-            } 
-            else {
-                let context = TemplateContextIndex {
-                    name: "TO DO - account - you are not logged in".to_string(),
-                    is_authenticated: false
-                };
-                return Template::render("account", &context);
-            }
-        }
-        Err(_not_logged_in) => {
-            let context = TemplateContextIndex {
-                name: "TO DO - account - login Page".to_string(),
-                is_authenticated: false
-            };
-            return Template::render("account", &context);
-        }
+pub mod account;
+pub use account::{
+    UserFormAccountPassword,
+    TemplateContextAccount,
+    update_account_nickname,
+    update_account_email,
+    update_account_password,
+    get_password_hash_from_id,
+    get_nickname_from_id,
+    error_login_validate_current_password_form
+    };
 
-    }
-}
 
 //<-----------------Login----------------->
 #[get("/login")]
@@ -95,8 +77,8 @@ pub fn login_get() -> Template {
 
 #[post("/login", data = "<user>")]
 pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Redirect, Template> {
-    let error_username = login_validate_form(user.username.clone());
-    let error_password = login_validate_form(user.password.clone());
+    let error_username = error_login_validate_empty_form(user.username.clone());
+    let error_password = error_login_validate_empty_form(user.password.clone());
 
 
     if error_username || error_password {
@@ -111,7 +93,6 @@ pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Red
     else {
         match get_password_hash_from_username_or_email(user.username.clone()) {
             Ok(password_hash) => {
-                println!("debug");
                 match verify(&user.password, &password_hash) {
                     Ok(password_match) => {
                         if password_match {
@@ -147,7 +128,7 @@ pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Red
                             let context = TemplateContextLogin {
                                 name, 
                                 error_username: false, 
-                                error_password: false
+                                error_password: true
                             };
                             return Err(Template::render("login", &context));
                         }
@@ -157,7 +138,7 @@ pub fn login_post(mut cookies: Cookies, user: Form<UserLoginForm>) -> Result<Red
                         let context = TemplateContextLogin {
                             name, 
                             error_username: false, 
-                            error_password: false
+                            error_password: true
                         };
                         return Err(Template::render("login", &context));
                     }
@@ -192,11 +173,11 @@ pub fn register_get() -> Template {
 
 #[post("/register", data = "<userdata>")]
 pub fn register_post(userdata: Form<UserForm>) -> Result<Redirect, Template> {
-    let error_username: bool = register_validate_username(userdata.username.clone());
-    let error_email: bool = register_validate_email(userdata.email.clone());
-    let error_password: bool = register_validate_password(userdata.password.clone()); 
+    let error_username: bool = error_register_validate_username(userdata.username.clone());
+    let error_email: bool = error_register_validate_email(userdata.email.clone());
+    let error_password: bool = error_register_validate_password(userdata.password.clone()); 
     let error_confirm_password: bool 
-        = register_validate_confirm_password(userdata.password.clone(), userdata.confirm_password.clone());
+        = error_register_validate_confirm_password(userdata.password.clone(), userdata.confirm_password.clone());
 
     let name: String;
 
@@ -230,8 +211,8 @@ pub fn register_post(userdata: Form<UserForm>) -> Result<Redirect, Template> {
 
 //<-----------------Index----------------->
 #[get("/")]
-pub fn index(cookies: Cookies) -> Template {
-    match get_user_id_from_cookies(cookies) {
+pub fn index(mut cookies: Cookies) -> Template {
+    match get_user_id_from_cookies(&mut cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
                 let context = TemplateContextIndex {
@@ -260,8 +241,8 @@ pub fn index(cookies: Cookies) -> Template {
 
 //<-----------------Chart----------------->
 #[get("/chart")]
-pub fn chart(cookies: Cookies) -> Template {
-    match get_user_id_from_cookies(cookies) {
+pub fn chart(mut cookies: Cookies) -> Template {
+    match get_user_id_from_cookies(&mut cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
                 let context = TemplateContextIndex {
@@ -288,12 +269,131 @@ pub fn chart(cookies: Cookies) -> Template {
     }
 }
 
+//<--------------------Account---------------------->
+#[get("/account")]
+pub fn account(mut cookies: Cookies) -> Template {
+    match get_user_id_from_cookies(&mut cookies) {
+        Ok(user_id) => {
+            if check_user_id(user_id as i32) {
+                let context = TemplateContextAccount {
+                    name: "TO DO - account - you are logged in".to_string(),
+                    error_username: false, 
+                    error_email: false, 
+                    error_current_password: false,
+                    error_password: false,
+                    error_confirm_password: false,
+                    is_authenticated: true
+                };
+                return Template::render("account", &context);
+            } 
+            else {
+                let context = TemplateContextAccount {
+                    name: "TO DO - account - you are not logged in".to_string(),
+                    error_username: false, 
+                    error_email: false, 
+                    error_current_password: false,
+                    error_password: false,
+                    error_confirm_password: false,
+                    is_authenticated: false
+                };
+                return Template::render("account", &context);
+            }
+        }
+        Err(_not_logged_in) => {
+            let context = TemplateContextAccount {
+                name: "TO DO - account - login Page".to_string(),
+                error_username: false, 
+                error_email: false, 
+                error_current_password: false,
+                error_password: false,
+                error_confirm_password: false,
+                is_authenticated: false
+            };
+            return Template::render("account", &context);
+        }
+
+    }
+}
+
+#[post("/account_change_password", data = "<userdata>")]
+pub fn change_password_post(mut cookies: Cookies, userdata: Form<UserFormAccountPassword>) -> Result<Redirect, Template> {
+    //check credential to change user data
+    let mut error_current_password: bool = error_login_validate_empty_form(userdata.current_password.clone());
+
+    let error_username: bool = false; //register validation
+    let error_email: bool = false; //register validation
+    let error_password: bool = error_register_validate_password(userdata.new_password.clone()); //register validation
+    let error_confirm_password: bool 
+        = error_register_validate_confirm_password(userdata.new_password.clone(), userdata.confirm_password.clone()); //register validation
+
+    let name: String;
+
+    match get_user_id_from_cookies(&mut cookies) {
+        Ok(user_id) => {
+            if check_user_id(user_id as i32) {
+                if error_current_password == false {
+                    error_current_password = error_login_validate_current_password_form(user_id as i32, userdata.current_password.clone())
+                }
+
+                if error_current_password || error_username || error_email || error_password || error_confirm_password {
+                    let context = TemplateContextAccount {
+                        name: "TO DO - account - login Page".to_string(),
+                        error_username, 
+                        error_email, 
+                        error_current_password,
+                        error_password,
+                        error_confirm_password,
+                        is_authenticated: true
+                    };
+                    return Err(Template::render("account", &context));
+                }
+                else {
+                    let password = userdata.new_password.clone();
+            
+                    match hash(&password, DEFAULT_COST) {
+                        Ok(hashed_password) => {
+                            let nickname = get_nickname_from_id(user_id as i32);
+                            update_account_password(nickname, hashed_password);
+
+                            if let Some(cookie) = cookies.get_private("session_token") {
+                                remove_user_id_from_session_token(cookie.value().to_string());
+                                cookies.remove_private(Cookie::named("session_token"));
+                            }
+                            return Ok(Redirect::to("/login"));
+                        }
+                        Err(_) => {
+                            name = format!("Registration faild");
+                        }
+                    }
+            
+                    let context = TemplateContextRegister {name, error_username, error_email, error_password, error_confirm_password};
+                    return Err(Template::render("account", &context));
+                }
+            } 
+            else {
+                let context = TemplateContextIndex {
+                    name: "TO DO - account - you are not logged in".to_string(),
+                    is_authenticated: false
+                };
+                return Err(Template::render("index", &context));
+            }
+        }
+        Err(_not_logged_in) => {
+            let context = TemplateContextIndex {
+                name: "TO DO - account - login Page".to_string(),
+                is_authenticated: false
+            };
+            return Err(Template::render("index", &context))
+        }
+    }
+}
+
 //<-----------------wallet----------------->
 #[get("/wallet_transactions")]
-pub fn wallet_transactions_get(cookies: Cookies) -> Template {
+pub fn wallet_transactions_get(mut cookies: Cookies) -> Template {
     let context_transactions: Vec<Transaction>;
 
-    match get_user_id_from_cookies(cookies) {
+    match get_user_id_from_cookies(&mut cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
                 context_transactions = get_transactions_from_db(user_id as i32);
@@ -324,8 +424,8 @@ pub fn wallet_transactions_get(cookies: Cookies) -> Template {
 }
 
 #[post("/wallet_transactions/add_transaction", data = "<transaction>")]
-pub fn wallet_transactions_post_add(cookies: Cookies, transaction: Form<TransactionForm>) -> Result<Redirect, Template> {
-    match get_user_id_from_cookies(cookies) {
+pub fn wallet_transactions_post_add(mut cookies: Cookies, transaction: Form<TransactionForm>) -> Result<Redirect, Template> {
+    match get_user_id_from_cookies(&mut cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
                 let mut price_for_one = 0.0;
@@ -366,8 +466,8 @@ pub fn wallet_transactions_post_add(cookies: Cookies, transaction: Form<Transact
 }
 
 #[post("/wallet_transactions/remove_transactions", data = "<data>")]
-pub fn wallet_transactions_post_remove(cookies: Cookies, content_type: &ContentType, data: Data) -> Result<Redirect, Template> {
-    match get_user_id_from_cookies(cookies) {
+pub fn wallet_transactions_post_remove(mut cookies: Cookies, content_type: &ContentType, data: Data) -> Result<Redirect, Template> {
+    match get_user_id_from_cookies(&mut cookies) {
         Ok(user_id) => {
             if check_user_id(user_id as i32) {
 

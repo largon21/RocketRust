@@ -17,6 +17,7 @@ fn main() {
         .mount("/", routes![
             templates::index, 
             templates::account, 
+            templates::change_password_post,
             templates::chart, 
             templates::wallet_transactions_get,
             templates::wallet_transactions_post_add,

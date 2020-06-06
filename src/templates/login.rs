@@ -88,7 +88,7 @@ pub fn generate_session_token(length: u8) -> Result<String, std::io::Error> {
     return Ok(strings.join(""));
 }
 
-pub fn login_validate_form(word: String) -> bool {
+pub fn error_login_validate_empty_form(word: String) -> bool { //if error set true
     if word.is_empty() {
         return true;
     }

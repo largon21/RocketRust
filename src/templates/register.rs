@@ -17,10 +17,9 @@ pub struct TemplateContextRegister {
     pub error_email: bool,
     pub error_password: bool,
     pub error_confirm_password: bool,
-
 }
 
-pub fn register_validate_username(username: String) -> bool {
+pub fn error_register_validate_username(username: String) -> bool {
     use hello_rocket::schema::users::dsl::*;
 
     if !username.is_empty() && username.len() >= 4 {
@@ -44,7 +43,7 @@ pub fn register_validate_username(username: String) -> bool {
     }
 }
 
-pub fn register_validate_email(user_email: String) -> bool {
+pub fn error_register_validate_email(user_email: String) -> bool {
     use hello_rocket::schema::users::dsl::*;
 
     if !user_email.is_empty() {
@@ -67,7 +66,7 @@ pub fn register_validate_email(user_email: String) -> bool {
     }
 }
 
-pub fn register_validate_password(user_password: String) -> bool {
+pub fn error_register_validate_password(user_password: String) -> bool {
     if !user_password.is_empty() && user_password.len() >= 4 {
         return false;
     }    
@@ -76,7 +75,7 @@ pub fn register_validate_password(user_password: String) -> bool {
     }
 }
 
-pub fn register_validate_confirm_password(str1: String, str2: String) -> bool {
+pub fn error_register_validate_confirm_password(str1: String, str2: String) -> bool {
     if str1 == str2 {
         return false;
     }    

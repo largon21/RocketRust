@@ -31,7 +31,7 @@ pub fn get_user_id_from_session_token(session_token: String) -> Result<i64, std:
     }
 }
 
-pub fn get_user_id_from_cookies(mut cookies: Cookies) -> Result<i64, std::io::Error> {
+pub fn get_user_id_from_cookies(cookies: &mut Cookies) -> Result<i64, std::io::Error> {
     match cookies.get_private("session_token") {
         Some(cookie) => match get_user_id_from_session_token(cookie.value().to_string()) {
             Ok(user_id) => Ok(user_id),

@@ -2,6 +2,7 @@ use super::schema::*;
 use serde_derive::Serialize;
 
 //---------TABLE users-------------
+#[derive(Identifiable)]
 #[derive(Queryable)]
 pub struct User {
     pub id: i32,
