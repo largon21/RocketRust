@@ -18,38 +18,47 @@
 </head>
 <body>
     <header class="site-header">
-  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
-    <div class="container">
-      <a class="navbar-brand mr-4" href="/">Rust Rocket</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      {% if is_authenticated %}
-      <div class="collapse navbar-collapse" id="navbarToggle">
-        <div class="navbar-nav mr-auto">
-          <a class="nav-item nav-link" href="/chart">Charts</a>
-          <a class="nav-item nav-link" href="/wallet">Wallet</a>
+      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+          <a class="navbar-brand mr-4" href="/">Rust Rocket</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          {% if is_authenticated %}
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link" href="/chart">Charts</a>
+              <!-- Wallet -->
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Wallet
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="/wallet_dashboard">Dashboard</a>
+                  <a class="dropdown-item" href="/wallet_transactions">Transactions</a>
+                </div>
+              </li>
+            </div>
+            <!-- Navbar Right Side -->
+            <div class="nav navbar-nav">
+                  <a class="nav-item nav-link" href="/account">Account</a>
+                  <a class="nav-item nav-link" href="/logout">Logout</a>
+          {% else %}
+            <div class="navbar-nav">  
+                  <a class="nav-item nav-link" href="/login">Log in</a>
+                  <a class="nav-item nav-link" href="/register">Register</a>
+          {% endif %}
+            </div>
+          </div>
         </div>
-        <!-- Navbar Right Side -->
-        <div class="navbar-nav">
-              <a class="nav-item nav-link" href="#">Account</a>
-              <a class="nav-item nav-link" href="/logout">Logout</a>
-      {% else %}
-        <div class="navbar-nav">  
-              <a class="nav-item nav-link" href="/login">Login</a>
-              <a class="nav-item nav-link" href="/register">Register</a>
-      {% endif %}
-        </div>
-      </div>
-    </div>
-  </nav>
-</header>
+      </nav>
+    </header>
     <main role="main" class="container">
-  <div class="row">
-    {% block content %}
-    {% endblock %}
-  </div>
-</main>
+      
+        {% block content %}
+        {% endblock %}
+      
+    </main>
 
 
     <!-- Optional JavaScript -->
@@ -61,7 +70,7 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" type="text/javascript"></script>
     <script type="text/javascript">
       $(document).ready( function () {
-          $('#myTable').DataTable();
+          $('#dtTransactions1').DataTable();
       } );
     </script>
 

@@ -25,6 +25,7 @@ fn main() {
             templates::wallet_transactions_get,
             templates::wallet_transactions_post_add,
             templates::wallet_transactions_post_remove,
+            templates::wallet_dashboard_get,
             templates::register_get, 
             templates::register_post,
             templates::login_get,

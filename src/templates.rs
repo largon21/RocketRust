@@ -43,9 +43,12 @@ pub use index::{
 pub mod wallet;
 pub use wallet::{
     TransactionForm, 
+    DashboardDataContext,
+    SummaryTransactions,
     TemplateContextWallet,
     remove_transaction,
-    get_transactions_from_db
+    get_transactions_from_db,
+    summarize_transactions
     };
     
 pub mod logout;
@@ -637,7 +640,8 @@ pub fn remove_account_post(mut cookies: Cookies, userdata: Form<UserFormRemoveAc
     }
 }
 
-//<-----------------wallet----------------->
+//<-----------------WALLET----------------->
+//<--------------Transactions-------------->
 #[get("/wallet_transactions")]
 pub fn wallet_transactions_get(mut cookies: Cookies) -> Template {
     let context_transactions: Vec<Transaction>;
@@ -767,6 +771,41 @@ pub fn wallet_transactions_post_remove(mut cookies: Cookies, content_type: &Cont
                 is_authenticated: false
             };
             return Err(Template::render("index", &context))
+        }
+    }
+}
+
+//<----------------Dashboard--------------->
+#[get("/wallet_dashboard")]
+pub fn wallet_dashboard_get(mut cookies: Cookies) -> Template {
+    let context_summary_transactions: Vec<SummaryTransactions>;
+
+    match get_user_id_from_cookies(&mut cookies) {
+        Ok(user_id) => {
+            if check_user_id(user_id as i32) {
+                context_summary_transactions = summarize_transactions(user_id as i32);
+
+                let context = DashboardDataContext {
+                    name: "".to_string(),
+                    is_authenticated: true,
+                    context_summary_transactions,
+                };
+                return Template::render("wallet_dashboard", &context);
+            } 
+            else {
+                let context = TemplateContextIndex {
+                    name: "TO DO - wallet - you are not logged in".to_string(),
+                    is_authenticated: false,
+                };
+                return Template::render("index", &context);
+            }
+        }
+        Err(_not_logged_in) => {
+            let context = TemplateContextIndex {
+                name: "TO DO - wallet - login Page".to_string(),
+                is_authenticated: false,
+            };
+            return Template::render("index", &context);
         }
     }
 }
