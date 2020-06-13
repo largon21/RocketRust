@@ -24,14 +24,14 @@ pub fn remove_transaction(active_user_id: i32, transaction_id: String) {
     let transaction_id: i32 = transaction_id.parse().unwrap();
     let connection = establish_connection();
 
-    let _num_deleted = diesel::
+    let _deleted_transactions = diesel::
         delete(
             transactions
             .filter(user_id.eq(active_user_id))
             .filter(id.eq(transaction_id))
         )
         .execute(&connection)
-        .expect("Error deleting posts");
+        .expect("Error deleting transactions");
 }
 
 pub fn get_transactions_from_db(current_user_id: i32) -> Vec<Transaction> {

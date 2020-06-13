@@ -4,20 +4,40 @@
     <div class = class="container">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="password-tab" data-toggle="tab" href="#password" role="tab" aria-controls="Password" aria-selected="true">Password</a>
+                {% if tab_selected == "password" %}
+                    <a class="nav-link active" id="password-tab" data-toggle="tab" href="#password" role="tab" aria-controls="Password" aria-selected="true">Password</a>
+                {% else %}
+                    <a class="nav-link" id="password-tab" data-toggle="tab" href="#password" role="tab" aria-controls="Password" aria-selected="false">Password</a>
+                {% endif %}
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="username-tab" data-toggle="tab" href="#username" role="tab" aria-controls="Username" aria-selected="false">Username</a>
+                {% if tab_selected == "username" %}
+                    <a class="nav-link active" id="username-tab" data-toggle="tab" href="#username" role="tab" aria-controls="Username" aria-selected="true">Username</a>
+                {% else %} 
+                    <a class="nav-link" id="username-tab" data-toggle="tab" href="#username" role="tab" aria-controls="Username" aria-selected="false">Username</a>
+                {% endif %}
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="email-tab" data-toggle="tab" href="#email" role="tab" aria-controls="Email" aria-selected="false">Email</a>
+                {% if tab_selected == "email" %}
+                    <a class="nav-link active" id="email-tab" data-toggle="tab" href="#email" role="tab" aria-controls="Email" aria-selected="true">Email</a>
+                {% else %} 
+                    <a class="nav-link" id="email-tab" data-toggle="tab" href="#email" role="tab" aria-controls="Email" aria-selected="false">Email</a>
+                {% endif %}
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="email-tab" data-toggle="tab" href="#remove_account" role="tab" aria-controls="Email" aria-selected="false">Remove account</a>
+                {% if tab_selected == "remove_account" %}
+                    <a class="nav-link active" id="remove_account-tab" data-toggle="tab" href="#remove_account" role="tab" aria-controls="Remove_account" aria-selected="true">Remove account</a>
+                {% else %}    
+                    <a class="nav-link" id="remove_account-tab" data-toggle="tab" href="#remove_account" role="tab" aria-controls="Remove_account" aria-selected="false">Remove account</a>
+                {% endif %}
             </li>
         </ul>
         <div class="tab-content mt-5" id="myTabContent">
-            <div class="tab-pane fade show active" id="password" role="tabpanel" aria-labelledby="password-tab">
+            {% if tab_selected == "password" %}
+                <div class="tab-pane fade show active" id="password" role="tabpanel" aria-labelledby="password-tab">
+            {% else %}
+                <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+            {% endif %}
                 <div class="col-md-8 container">
                     <div class="content-fluid">
                         <div class="content-section">
@@ -71,38 +91,40 @@
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="username" role="tabpanel" aria-labelledby="username-tab">
+            {% if tab_selected == "username" %}
+                <div class="tab-pane fade  show active" id="username" role="tabpanel" aria-labelledby="username-tab">
+            {% else %} 
+                <div class="tab-pane fade" id="username" role="tabpanel" aria-labelledby="username-tab">
+            {% endif %}
                 <div class="col-md-8 container">
                     <div class="content-fluid">
                         <div class="content-section">
-                            <form method="POST" action="" autocomplete="off">
+                            <form method="POST" action="/account_change_username" autocomplete="off">
                                 <fieldset classs="form-group">
-                                    <legend class="border-bottom mb-0">Change username</legend>
+                                    <legend class="border-bottom mb-0">Change username: <b>{{username_account}}</b></legend>
 
                                     <dir class="form-group">
                                         <label class="form-control-label" for="pwd">Password:</label>
-                                        <!-- {% if error_password %}
-                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg is-invalid" id="pwd" name="password" placeholder="Password">
+                                        {% if error_username_password %}
+                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg is-invalid" id="pwd" name="current_password" placeholder="Password">
                                             <div class="invalid-feedback">
                                                 <span>Wrong password</span>
                                             </div>
                                         {% else %}
-                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
-                                        {% endif %} -->
-                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
+                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="current_password" placeholder="Password">
+                                        {% endif %}
                                     </dir>
 
                                     <dir class="form-group">
                                         <label class="form-control-label" for="pwd">New username:</label>
-                                        <!-- {% if error_confirm_password %}
-                                            <input type="text" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                        {% if error_username %}
+                                            <input type="text" class="form-control form-control-lg is-invalid" id="pwd" name="new_username" placeholder="New username">
                                             <div class="invalid-feedback">
                                                 <span>Wrong password</span>
                                             </div>
                                         {% else %}
-                                            <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
-                                        {% endif %} -->
-                                            <input type="text" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="New username">
+                                            <input type="text" class="form-control form-control-lg" id="pwd" name="new_username" placeholder="New username">
+                                        {% endif %}
                                     </dir>
 
                                     <dir class="form-group border-top  pt-3">
@@ -115,38 +137,40 @@
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="email" role="tabpanel" aria-labelledby="email-tab">
+            {% if tab_selected == "email" %}
+                <div class="tab-pane fade show active" id="email" role="tabpanel" aria-labelledby="email-tab">
+            {% else %} 
+                <div class="tab-pane fade" id="email" role="tabpanel" aria-labelledby="email-tab">
+            {% endif %}
                 <div class="col-md-8 container">
                     <div class="content-fluid">
                         <div class="content-section">
-                            <form method="POST" action="" autocomplete="off">
+                            <form method="POST" action="/account_change_email" autocomplete="off">
                                 <fieldset classs="form-group">
-                                    <legend class="border-bottom mb-0">Change email</legend>
+                                    <legend class="border-bottom mb-0">Change email: <b>{{email_account}}</b></legend>
 
                                     <dir class="form-group">
                                         <label class="form-control-label" for="pwd">Password:</label>
-                                        <!-- {% if error_password %}
-                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg is-invalid" id="pwd" name="password" placeholder="Password">
+                                        {% if error_email_password %}
+                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg is-invalid" id="pwd" name="current_password" placeholder="Password">
                                             <div class="invalid-feedback">
                                                 <span>Wrong password</span>
                                             </div>
                                         {% else %}
-                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
-                                        {% endif %} -->
-                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="password" placeholder="Password">
+                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="current_password" placeholder="Password">
+                                        {% endif %}
                                     </dir>
 
                                     <dir class="form-group">
                                         <label class="form-control-label" for="pwd">New email:</label>
-                                        <!-- {% if error_confirm_password %}
-                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                        {% if error_email %}
+                                            <input type="text" class="form-control form-control-lg is-invalid" id="pwd" name="new_email" placeholder="New email">
                                             <div class="invalid-feedback">
-                                                <span>Wrong password</span>
+                                                <span>Wrong email</span>
                                             </div>
                                         {% else %}
-                                            <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
-                                        {% endif %} -->
-                                        <input type="text" class="form-control form-control-lg" id="pwd" name="#" placeholder="New email">
+                                            <input type="text" class="form-control form-control-lg" id="pwd" name="new_email" placeholder="New email">
+                                        {% endif %}
                                     </dir>
 
                                     <dir class="form-group border-top  pt-3">
@@ -159,29 +183,33 @@
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="remove_account" role="tabpanel" aria-labelledby="remove_account-tab">
+            {% if tab_selected == "remove_account" %}
+                <div class="tab-pane fade  show active" id="remove_account" role="tabpanel" aria-labelledby="remove_account-tab">
+            {% else %}    
+                <div class="tab-pane fade" id="remove_account" role="tabpanel" aria-labelledby="remove_account-tab">
+            {% endif %}
                 <div class="col-md-8 container">
                     <div class="content-fluid">
                         <div class="content-section">
-                            <form method="POST" action="" autocomplete="off">
+                            <form method="POST" action="/account_remove_account" autocomplete="off">
                                 <fieldset classs="form-group">
                                     <legend class="border-bottom mb-0">Remove account</legend>
 
                                     <dir class="form-group">
                                         <label class="form-control-label" for="pwd">Password:</label>
-                                        {% if error_password %}
-                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg is-invalid" id="pwd" name="new_password" placeholder="Password">
+                                        {% if error_remove_account_password %}
+                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg is-invalid" id="pwd" name="current_password" placeholder="Password">
                                             <div class="invalid-feedback">
                                                 <span>Wrong current password</span>
                                             </div>
                                         {% else %}
-                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="new_password" placeholder="Password">
+                                            <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="current_password" placeholder="Password">
                                         {% endif %}
                                     </dir>
                 
                                     <dir class="form-group">
                                         <label class="form-control-label" for="pwd">Confirm password:</label>
-                                        {% if error_confirm_password %}
+                                        {% if error_remove_account_confirm_password %}
                                             <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
                                             <div class="invalid-feedback">
                                                 <span>Wrong confirm password</span>
