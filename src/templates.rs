@@ -289,7 +289,7 @@ pub fn account(mut cookies: Cookies) -> Template {
                 let context = TemplateContextAccount {
                     username_account,
                     email_account,
-                    tab_selected: "password".to_string(),
+                    tab_selected: "username".to_string(),
 
                     error_username: false,
                     error_username_password: false,
@@ -320,95 +320,6 @@ pub fn account(mut cookies: Cookies) -> Template {
             return Template::render("index", &context);
         }
 
-    }
-}
-
-#[post("/account_change_password", data = "<userdata>")]
-pub fn change_password_post(mut cookies: Cookies, userdata: Form<UserFormAccountPassword>) -> Result<Redirect, Template> {
-    //check credential to change user data
-    let mut error_current_password: bool = error_login_validate_empty_form(userdata.current_password.clone());
-    let error_password: bool = error_register_validate_password(userdata.new_password.clone());
-    let error_confirm_password: bool 
-        = error_register_validate_confirm_password(userdata.new_password.clone(), userdata.confirm_password.clone());
-
-    let error_username: bool = false; //register validation
-    let error_username_password: bool = false; //register validation
-    let error_email: bool = false; //register validation 
-    let error_email_password: bool = false; //register validation 
-    let error_remove_account_password: bool  = false; //register validation
-    let error_remove_account_confirm_password: bool = false; //register validation
-    
-
-    let name: String;
-
-    match get_user_id_from_cookies(&mut cookies) {
-        Ok(user_id) => {
-            if check_user_id(user_id as i32) {
-                if error_current_password == false {
-                    error_current_password = error_account_validate_password(user_id as i32, userdata.current_password.clone());
-                }
-
-                if error_current_password || error_username || error_username_password || error_email || error_email_password || error_password 
-                || error_confirm_password || error_remove_account_password || error_remove_account_confirm_password {
-
-                    let username_account: String = get_nickname_from_id(user_id as i32);
-                    let email_account: String = get_email_from_id(user_id as i32);
-
-                    let context = TemplateContextAccount {
-                        username_account,
-                        email_account,
-                        tab_selected: "password".to_string(),
-
-                        error_username, 
-                        error_username_password, 
-                        error_email, 
-                        error_email_password, 
-                        error_current_password,
-                        error_remove_account_password,
-                        error_remove_account_confirm_password,
-                        error_password,
-                        error_confirm_password,
-                        is_authenticated: true
-                    };
-                    return Err(Template::render("account", &context));
-                }
-                else {
-                    let new_password = userdata.new_password.clone();
-            
-                    match hash(&new_password, DEFAULT_COST) {
-                        Ok(hashed_password) => {
-                            let nickname = get_nickname_from_id(user_id as i32);
-                            update_account_password(nickname, hashed_password);
-
-                            if let Some(cookie) = cookies.get_private("session_token") {
-                                remove_user_id_from_session_token(cookie.value().to_string());
-                                cookies.remove_private(Cookie::named("session_token"));
-                            }
-                            return Ok(Redirect::to("/login"));
-                        }
-                        Err(_) => {
-                            name = format!("Registration faild");
-                            let context = TemplateContextRegister {name, error_username, error_email, error_password, error_confirm_password};
-                            return Err(Template::render("index", &context));
-                        }
-                    }
-                }
-            } 
-            else {
-                let context = TemplateContextIndex {
-                    name: "TO DO - account - you are not logged in".to_string(),
-                    is_authenticated: false
-                };
-                return Err(Template::render("index", &context));
-            }
-        }
-        Err(_not_logged_in) => {
-            let context = TemplateContextIndex {
-                name: "TO DO - account - login Page".to_string(),
-                is_authenticated: false
-            };
-            return Err(Template::render("index", &context))
-        }
     }
 }
 
@@ -544,6 +455,95 @@ pub fn change_email_post(mut cookies: Cookies, userdata: Form<UserFormAccountEma
                         cookies.remove_private(Cookie::named("session_token"));
                     }
                     return Ok(Redirect::to("/login"));
+                }
+            } 
+            else {
+                let context = TemplateContextIndex {
+                    name: "TO DO - account - you are not logged in".to_string(),
+                    is_authenticated: false
+                };
+                return Err(Template::render("index", &context));
+            }
+        }
+        Err(_not_logged_in) => {
+            let context = TemplateContextIndex {
+                name: "TO DO - account - login Page".to_string(),
+                is_authenticated: false
+            };
+            return Err(Template::render("index", &context))
+        }
+    }
+}
+
+#[post("/account_change_password", data = "<userdata>")]
+pub fn change_password_post(mut cookies: Cookies, userdata: Form<UserFormAccountPassword>) -> Result<Redirect, Template> {
+    //check credential to change user data
+    let mut error_current_password: bool = error_login_validate_empty_form(userdata.current_password.clone());
+    let error_password: bool = error_register_validate_password(userdata.new_password.clone());
+    let error_confirm_password: bool 
+        = error_register_validate_confirm_password(userdata.new_password.clone(), userdata.confirm_password.clone());
+
+    let error_username: bool = false; //register validation
+    let error_username_password: bool = false; //register validation
+    let error_email: bool = false; //register validation 
+    let error_email_password: bool = false; //register validation 
+    let error_remove_account_password: bool  = false; //register validation
+    let error_remove_account_confirm_password: bool = false; //register validation
+    
+
+    let name: String;
+
+    match get_user_id_from_cookies(&mut cookies) {
+        Ok(user_id) => {
+            if check_user_id(user_id as i32) {
+                if error_current_password == false {
+                    error_current_password = error_account_validate_password(user_id as i32, userdata.current_password.clone());
+                }
+
+                if error_current_password || error_username || error_username_password || error_email || error_email_password || error_password 
+                || error_confirm_password || error_remove_account_password || error_remove_account_confirm_password {
+
+                    let username_account: String = get_nickname_from_id(user_id as i32);
+                    let email_account: String = get_email_from_id(user_id as i32);
+
+                    let context = TemplateContextAccount {
+                        username_account,
+                        email_account,
+                        tab_selected: "password".to_string(),
+
+                        error_username, 
+                        error_username_password, 
+                        error_email, 
+                        error_email_password, 
+                        error_current_password,
+                        error_remove_account_password,
+                        error_remove_account_confirm_password,
+                        error_password,
+                        error_confirm_password,
+                        is_authenticated: true
+                    };
+                    return Err(Template::render("account", &context));
+                }
+                else {
+                    let new_password = userdata.new_password.clone();
+            
+                    match hash(&new_password, DEFAULT_COST) {
+                        Ok(hashed_password) => {
+                            let nickname = get_nickname_from_id(user_id as i32);
+                            update_account_password(nickname, hashed_password);
+
+                            if let Some(cookie) = cookies.get_private("session_token") {
+                                remove_user_id_from_session_token(cookie.value().to_string());
+                                cookies.remove_private(Cookie::named("session_token"));
+                            }
+                            return Ok(Redirect::to("/login"));
+                        }
+                        Err(_) => {
+                            name = format!("Registration faild");
+                            let context = TemplateContextRegister {name, error_username, error_email, error_password, error_confirm_password};
+                            return Err(Template::render("index", &context));
+                        }
+                    }
                 }
             } 
             else {

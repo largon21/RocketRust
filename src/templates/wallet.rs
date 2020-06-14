@@ -44,12 +44,18 @@ pub fn summarize_transactions(current_user_id: i32) -> Vec<SummaryTransactions> 
 
     for transaction in transactions {
         // for buy currency
-        if let Some(summary_transactions) = return_summary.iter().find(|&x| x.coin == transaction.buy_currency) {
-            println!("omg");
+        if let Some(mut summary_transactions) = return_summary.iter_mut().find(|x| x.coin == transaction.buy_currency) {
+
+            let mut summary_transactions: &mut SummaryTransactions = &mut summary_transactions;
+
+            summary_transactions.all_coins += transaction.buy_amount.clone();
+            summary_transactions.all_spent_coins += transaction.sell_amount*check_current_price_pln(transaction.sell_currency.clone()); // PLN
+            summary_transactions.current_price = check_current_price_pln(transaction.buy_currency.clone());
+            summary_transactions.average_purchase_value = summary_transactions.all_spent_coins/summary_transactions.all_coins;
         }
         else {
-            let all_spent_coins: f32 = transaction.sell_amount*check_current_price_pln(transaction.sell_currency.clone()); // PLN
             let all_coins: f32 = transaction.buy_amount.clone(); //check wheter is not 0 !!!!!!!!!!!!!!!!!
+            let all_spent_coins: f32 = transaction.sell_amount*check_current_price_pln(transaction.sell_currency.clone()); // PLN
 
             let foo = SummaryTransactions {
                 coin: transaction.buy_currency.clone(),
@@ -63,12 +69,18 @@ pub fn summarize_transactions(current_user_id: i32) -> Vec<SummaryTransactions> 
         }
 
         // for sell currency
-        if let Some(summary_transactions) = return_summary.iter().find(|&x| x.coin == transaction.sell_currency) {
-            println!("omg");
+        if let Some(mut summary_transactions) = return_summary.iter_mut().find(|x| x.coin == transaction.sell_currency) {
+
+            let mut summary_transactions: &mut SummaryTransactions = &mut summary_transactions;
+
+            summary_transactions.all_coins += (-1.0)*transaction.sell_amount.clone();
+            summary_transactions.all_spent_coins += (-1.0)*transaction.buy_amount*check_current_price_pln(transaction.buy_currency.clone()); // PLN
+            summary_transactions.current_price = check_current_price_pln(transaction.buy_currency.clone());
+            summary_transactions.average_purchase_value = summary_transactions.all_spent_coins/summary_transactions.all_coins;
         }
         else {
-            let all_spent_coins: f32 = transaction.buy_amount*check_current_price_pln(transaction.buy_currency.clone()); // PLN
             let all_coins: f32 = (-1.0)*transaction.sell_amount.clone(); //check wheter is not 0 !!!!!!!!!!!!!!!!!
+            let all_spent_coins: f32 = (-1.0)*transaction.buy_amount*check_current_price_pln(transaction.buy_currency.clone()); // PLN
 
             let foo = SummaryTransactions {
                 coin: transaction.sell_currency.clone(),
