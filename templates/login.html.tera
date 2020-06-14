@@ -1,7 +1,6 @@
 {% extends "Layout" %}
 {% block content %}
 <div class="col-md-8 container">
-    <h1>{{name}}</h1>
     <div class="content-section">
         <form method="POST" action="">
             <fieldset classs="form-group">
