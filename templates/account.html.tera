@@ -62,7 +62,7 @@
                                         {% if error_username %}
                                             <input type="text" class="form-control form-control-lg is-invalid" id="pwd" name="new_username" placeholder="New username">
                                             <div class="invalid-feedback">
-                                                <span>Wrong password</span>
+                                                <span>Wrong username</span>
                                             </div>
                                         {% else %}
                                             <input type="text" class="form-control form-control-lg" id="pwd" name="new_username" placeholder="New username">
@@ -150,26 +150,26 @@
                                     </dir>
 
                                     <dir class="form-group">
-                                        <label class="form-control-label" for="pwd">Password:</label>
+                                        <label class="form-control-label" for="pwd">New password:</label>
                                         {% if error_password %}
-                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="new_password" placeholder="Password">
+                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="new_password" placeholder="New password">
                                             <div class="invalid-feedback">
-                                                <span>Wrong current password</span>
+                                                <span>Wrong password</span>
                                             </div>
                                         {% else %}
-                                            <input type="password" class="form-control form-control-lg" id="pwd" name="new_password" placeholder="Password">
+                                            <input type="password" class="form-control form-control-lg" id="pwd" name="new_password" placeholder="New password">
                                         {% endif %}
                                     </dir>
                 
                                     <dir class="form-group">
-                                        <label class="form-control-label" for="pwd">Confirm password:</label>
+                                        <label class="form-control-label" for="pwd">Confirm new password:</label>
                                         {% if error_confirm_password %}
-                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                            <input type="password" class="form-control form-control-lg is-invalid" id="pwd" name="confirm_password" placeholder="Confirm new password">
                                             <div class="invalid-feedback">
                                                 <span>Wrong confirm password</span>
                                             </div>
                                         {% else %}
-                                            <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm password">
+                                            <input type="password" class="form-control form-control-lg" id="pwd" name="confirm_password" placeholder="Confirm new password">
                                         {% endif %}
                                     </dir>
 
@@ -200,7 +200,7 @@
                                         {% if error_remove_account_password %}
                                             <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg is-invalid" id="pwd" name="current_password" placeholder="Password">
                                             <div class="invalid-feedback">
-                                                <span>Wrong current password</span>
+                                                <span>Wrong password</span>
                                             </div>
                                         {% else %}
                                             <input readonly="readonly" onfocus="this.removeAttribute('readonly');" type="password" class="form-control form-control-lg" id="pwd" name="current_password" placeholder="Password">
