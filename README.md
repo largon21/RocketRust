@@ -1,1 +1,1 @@
-# RocketRust
+# Projekt platformy traidingowej
