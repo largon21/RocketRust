@@ -29,4 +29,9 @@
     </div>
     <!-- TradingView Widget END -->
 </div>
+
+    
+<div class="text-center mt-5">
+  <img src="https://alternative.me/crypto/fear-and-greed-index.png" alt="Latest Crypto Fear & Greed Index" />
+</div>
 {% endblock content %}
